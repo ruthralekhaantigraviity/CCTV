@@ -1,0 +1,351 @@
+@import "tailwindcss";
+
+/* ─── Theme tokens ─────────────────────────────── */
+:root {
+  /* LIGHT theme (default) */
+  --bg-primary: #f0f4f8;
+  --bg-secondary: #e2e8f0;
+  --bg-card: #ffffff;
+  --bg-card-2: #dbeafe;
+  --bg-nav: rgba(255, 255, 255, 0.97);
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --border: rgba(59, 130, 246, 0.25);
+  --border-soft: rgba(59, 130, 246, 0.12);
+  --hero-gradient: linear-gradient(135deg, #e0eaff 0%, #f0f4f8 50%, #dbeafe 100%);
+  --section-alt: linear-gradient(180deg, #f0f4f8, #e2e8f0);
+  --grid-line: rgba(59, 130, 246, 0.08);
+  --card-hover-shadow: 0 20px 60px rgba(59, 130, 246, 0.15);
+  --glow-1: rgba(59, 130, 246, 0.08);
+  --glow-2: rgba(37, 99, 235, 0.06);
+  --overlay-dark: rgba(255, 255, 255, 0.7);
+}
+
+[data-theme="dark"] {
+  /* DARK theme */
+  --bg-primary: #060e1a;
+  --bg-secondary: #0a1628;
+  --bg-card: rgba(13, 36, 68, 0.50);
+  --bg-card-2: #0d2444;
+  --bg-nav: rgba(6, 14, 26, 0.97);
+  --text-primary: #ffffff;
+  --text-secondary: #d1d5db;
+  --text-muted: #6b7280;
+  --border: rgba(59, 130, 246, 0.20);
+  --border-soft: rgba(59, 130, 246, 0.12);
+  --hero-gradient: linear-gradient(135deg, #060e1a 0%, #0a1628 50%, #0d2444 100%);
+  --section-alt: linear-gradient(180deg, #0a1628, #060e1a);
+  --grid-line: rgba(59, 130, 246, 0.30);
+  --card-hover-shadow: 0 20px 60px rgba(59, 130, 246, 0.10);
+  --glow-1: rgba(59, 130, 246, 0.20);
+  --glow-2: rgba(30, 58, 138, 0.20);
+  --overlay-dark: rgba(6, 14, 26, 0.85);
+}
+
+@theme {
+  --color-primary: #0a1628;
+  --color-primary-light: #0d2444;
+  --color-secondary: #1e40af;
+  --color-accent: #3b82f6;
+  --color-accent-light: #60a5fa;
+  --color-dark: #060e1a;
+  --color-surface: #0f1f38;
+  --color-surface-light: #162947;
+  --font-sans: 'Inter', sans-serif;
+  --font-heading: 'Space Grotesk', sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-size: 14px;
+  }
+
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: -0.03em;
+    font-weight: 700;
+  }
+
+  button {
+    font-family: 'Inter', sans-serif;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    background: linear-gradient(135deg, #3b82f6, #60a5fa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .glass-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border);
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-300 hover:-translate-y-0.5;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center gap-2 border-2 border-blue-500 text-blue-500 hover:bg-blue-600 hover:text-white font-semibold px-6 py-3 rounded-lg transition-all duration-300;
+  }
+
+  .section-title {
+    color: var(--text-primary);
+    @apply text-4xl font-bold mb-4;
+  }
+
+  .section-subtitle {
+    @apply text-blue-500 font-semibold uppercase tracking-widest text-sm mb-3;
+  }
+
+  /* Theme-aware text helpers */
+  .t-primary {
+    color: var(--text-primary);
+  }
+
+  .t-secondary {
+    color: var(--text-secondary);
+  }
+
+  .t-muted {
+    color: var(--text-muted);
+  }
+
+  .bg-surface {
+    background: var(--bg-card);
+  }
+
+  .bg-page {
+    background: var(--bg-primary);
+  }
+
+  .no-hover-bg:hover {
+    background-color: var(--dark-blue) !important;
+  }
+}
+
+/* ─── Global Dark Mode Overrides ─────────────────────────────── */
+/* Forces all hardcoded Tailwind classes to go dark when data-theme="dark" */
+
+[data-theme="dark"] .bg-white {
+  background-color: var(--bg-card) !important;
+}
+
+[data-theme="dark"] .bg-gray-50 {
+  background-color: var(--bg-secondary) !important;
+}
+
+[data-theme="dark"] .bg-gray-100 {
+  background-color: #0d1f38 !important;
+}
+
+[data-theme="dark"] .bg-gray-200 {
+  background-color: #0a1628 !important;
+}
+
+[data-theme="dark"] .bg-gray-800,
+[data-theme="dark"] .bg-gray-900 {
+  background-color: var(--bg-primary) !important;
+}
+
+/* Text overrides */
+[data-theme="dark"] .text-gray-900 {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .text-gray-800 {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .text-gray-700 {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .text-gray-600 {
+  color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .text-gray-500 {
+  color: var(--text-muted) !important;
+}
+
+/* Border overrides */
+[data-theme="dark"] .border-gray-200 {
+  border-color: var(--border) !important;
+}
+
+[data-theme="dark"] .border-gray-100 {
+  border-color: var(--border-soft) !important;
+}
+
+[data-theme="dark"] .divide-gray-200>*+* {
+  border-color: var(--border) !important;
+}
+
+/* Card / surface shadows in dark */
+[data-theme="dark"] .shadow-md,
+[data-theme="dark"] .shadow-lg,
+[data-theme="dark"] .shadow-xl {
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Input fields */
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border) !important;
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: var(--text-muted) !important;
+}
+
+/* Generic ring / focus */
+[data-theme="dark"] .ring-gray-200 {
+  --tw-ring-color: var(--border) !important;
+}
+
+/* ─── Products page always stays LIGHT ──────────────────────── */
+[data-theme="dark"] .products-page,
+[data-theme="dark"] .products-page .bg-white {
+  background-color: white !important;
+  color: #111827 !important;
+}
+
+[data-theme="dark"] .products-page .bg-gray-50 {
+  background-color: #f9fafb !important;
+}
+
+[data-theme="dark"] .products-page .bg-gray-100 {
+  background-color: #f3f4f6 !important;
+}
+
+[data-theme="dark"] .products-page .bg-gray-200 {
+  background-color: #e5e7eb !important;
+}
+
+[data-theme="dark"] .products-page .text-gray-900 {
+  color: #111827 !important;
+}
+
+[data-theme="dark"] .products-page .text-gray-800 {
+  color: #1f2937 !important;
+}
+
+[data-theme="dark"] .products-page .text-gray-700 {
+  color: #374151 !important;
+}
+
+[data-theme="dark"] .products-page .text-gray-600 {
+  color: #4b5563 !important;
+}
+
+[data-theme="dark"] .products-page .text-gray-500 {
+  color: #6b7280 !important;
+}
+
+[data-theme="dark"] .products-page .text-black {
+  color: #000000 !important;
+}
+
+[data-theme="dark"] .products-page .border-gray-100 {
+  border-color: #f3f4f6 !important;
+}
+
+[data-theme="dark"] .products-page .border-gray-200 {
+  border-color: #e5e7eb !important;
+}
+
+[data-theme="dark"] .products-page .border-gray-300 {
+  border-color: #d1d5db !important;
+}
+
+[data-theme="dark"] .products-page input,
+[data-theme="dark"] .products-page select {
+  background-color: #f3f4f6 !important;
+  color: #111827 !important;
+  border-color: #e5e7eb !important;
+}
+
+[data-theme="dark"] .products-page .shadow-md,
+[data-theme="dark"] .products-page .shadow-lg,
+[data-theme="dark"] .products-page .shadow-xl,
+[data-theme="dark"] .products-page .shadow-sm {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* ─── Dark Blue – Global Button Overrides ──────────────── */
+:root {
+  --dark-blue: #1e3a8a;
+  --dark-blue-hover: #1e40af;
+}
+
+/* Tailwind bg-blue-600 buttons */
+.bg-blue-600,
+button.bg-blue-600,
+a.bg-blue-600 {
+  background-color: var(--dark-blue) !important;
+  transition: background-color 0.2s ease;
+}
+
+.bg-blue-600:hover,
+button.bg-blue-600:hover,
+a.bg-blue-600:hover,
+.hover\:bg-blue-700:hover {
+  background-color: var(--dark-blue-hover) !important;
+}
+
+/* Tailwind bg-blue-700 */
+.bg-blue-700,
+button.bg-blue-700,
+a.bg-blue-700 {
+  background-color: var(--dark-blue) !important;
+}
+
+/* Utility class .btn-primary */
+.btn-primary {
+  background-color: var(--dark-blue) !important;
+  transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--dark-blue-hover) !important;
+}
+
+/* Outline buttons */
+.btn-outline {
+  border-color: var(--dark-blue) !important;
+  color: var(--dark-blue) !important;
+}
+
+.btn-outline:hover {
+  background-color: var(--dark-blue) !important;
+  color: white !important;
+}

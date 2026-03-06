@@ -1,0 +1,14 @@
+node_modules/
+.env
+.DS_Store
+dist/
+build/
+*.log
+.vscode/
+.idea/
+*.blend1
+render/
+client/node_modules/
+server/node_modules/
+client/dist/
+server/dist/
