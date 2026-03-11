@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -19,39 +19,63 @@ import Signup from './pages/Signup';
 import FloatingWidgets from './components/FloatingWidgets';
 import { AuthProvider } from './context/AuthContext';
 import Dashboard from './pages/Dashboard';
+import AdminLogin from './pages/AdminLogin';
+import AdminDashboard from './pages/AdminDashboard';
+import EmployeeDashboard from './pages/EmployeeDashboard';
+import EmployeeLogin from './pages/EmployeeLogin';
 
 function App() {
   return (
     <AuthProvider>
       <ThemeProvider>
         <Router>
-          <div className="min-h-screen flex flex-col" style={{ background: 'var(--bg-primary)' }}>
-            <Navbar />
-            <main className="flex-grow">
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/services" element={<Services />} />
-                <Route path="/services/:slug" element={<ServiceDetail />} />
-                <Route path="/industries" element={<Industries />} />
-                <Route path="/testimonials" element={<TestimonialsPage />} />
-                <Route path="/careers" element={<Careers />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/blog" element={<Blog />} />
-                <Route path="/products" element={<Products />} />
-                <Route path="/products/:slug" element={<ProductDetail />} />
-                <Route path="/book-technician" element={<BookTechnician />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-              </Routes>
-            </main>
-            <Footer />
-            <FloatingWidgets />
-          </div>
+          <AppContent />
         </Router>
       </ThemeProvider>
     </AuthProvider>
+  );
+}
+
+function AppContent() {
+  const location = useLocation();
+  const isAdminPath = ['/admin', '/admin-dashboard', '/employee', '/employee-dashboard'].some(path =>
+    location.pathname.toLowerCase().startsWith(path.toLowerCase())
+  );
+
+  return (
+    <div className="min-h-screen flex flex-col" style={{ background: 'var(--bg-primary)' }}>
+      {!isAdminPath && <Navbar />}
+      <main className="flex-grow">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/services/:slug" element={<ServiceDetail />} />
+          <Route path="/industries" element={<Industries />} />
+          <Route path="/testimonials" element={<TestimonialsPage />} />
+          <Route path="/careers" element={<Careers />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/products/:slug" element={<ProductDetail />} />
+          <Route path="/book-technician" element={<BookTechnician />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin-dashboard/*" element={<AdminDashboard />} />
+          <Route path="/employee/login" element={<EmployeeLogin />} />
+          <Route path="/employee-dashboard/*" element={<EmployeeDashboard />} />
+          <Route path="*" element={<div className="min-h-screen flex items-center justify-center bg-gray-50 flex-col gap-4">
+            <h1 className="text-4xl font-bold text-slate-800">404 - Page Not Found</h1>
+            <p className="text-slate-500">The gateway you are looking for does not exist.</p>
+            <a href="/" className="px-6 py-2 bg-blue-600 text-white rounded-lg">Return Home</a>
+          </div>} />
+        </Routes>
+      </main>
+      {!isAdminPath && <Footer />}
+      {!isAdminPath && <FloatingWidgets />}
+    </div>
   );
 }
 

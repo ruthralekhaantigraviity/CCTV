@@ -52,13 +52,13 @@ export default function CTABanner() {
                 >
                     <Link
                         to="/contact"
-                        className="inline-flex items-center justify-center gap-2 bg-white text-blue-900 hover:bg-blue-50 font-bold px-8 py-4 rounded-xl transition-all duration-300 hover:-translate-y-0.5 text-lg"
+                        className="inline-flex items-center justify-center gap-2 bg-white text-blue-900 font-bold px-6 py-2.5 rounded-none transition-all duration-300 hover:-translate-y-0.5 text-sm"
                     >
                         Request Security Assessment <FiArrowRight />
                     </Link>
                     <a
                         href="tel:+18001234567"
-                        className="inline-flex items-center justify-center gap-2 bg-white/15 hover:bg-white/25 border-2 border-white/50 text-white font-bold px-8 py-4 rounded-xl transition-all duration-300 text-lg"
+                        className="inline-flex items-center justify-center gap-2 bg-white/15 border-2 border-white/50 text-white font-bold px-6 py-2.5 rounded-none transition-all duration-300 text-sm"
                     >
                         Call Now: +1 (800) 123-4567
                     </a>

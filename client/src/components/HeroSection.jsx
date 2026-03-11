@@ -86,11 +86,11 @@ export default function HeroSection() {
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4 }}
                         className="flex flex-wrap gap-6"
                     >
-                        <Link to="/contact" className="btn-primary text-base px-8 py-3.5 !rounded-none">
+                        <Link to="/contact" className="btn-primary text-sm px-6 py-2.5 !rounded-none">
                             Get Free Quote <FiArrowRight />
                         </Link>
                         <a href="tel:+18001234567"
-                            className="flex items-center gap-2 font-semibold px-8 py-3.5 rounded-none transition-all duration-300 text-base text-white"
+                            className="flex items-center gap-2 font-semibold px-6 py-2.5 rounded-none transition-all duration-300 text-sm text-white"
                             style={{ background: '#16a34a' }}
                             onMouseEnter={e => e.currentTarget.style.background = '#15803d'}
                             onMouseLeave={e => e.currentTarget.style.background = '#16a34a'}

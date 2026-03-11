@@ -4,213 +4,213 @@ import { FiCalendar, FiClock, FiUser, FiPhone, FiMail, FiMapPin, FiCheckCircle, 
 import CTABanner from '../components/CTABanner';
 
 export default function BookTechnician() {
-    const [step, setStep] = useState(1);
-    const [form, setForm] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        address: '',
-        date: '',
-        timeSlot: '',
-        serviceType: 'CCTV Installation',
-        message: ''
-    });
+ const [step, setStep] = useState(1);
+ const [form, setForm] = useState({
+ name: '',
+ email: '',
+ phone: '',
+ address: '',
+ date: '',
+ timeSlot: '',
+ serviceType: 'CCTV Installation',
+ message: ''
+ });
 
-    const [submitted, setSubmitted] = useState(false);
+ const [submitted, setSubmitted] = useState(false);
 
-    const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+ const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        setSubmitted(true);
-    };
+ const handleSubmit = (e) => {
+ e.preventDefault();
+ setSubmitted(true);
+ };
 
-    if (submitted) {
-        return (
-            <div className="pt-32 pb-20 min-h-screen bg-white flex items-center justify-center">
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="max-w-md w-full text-center px-6"
-                >
-                    <div className="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <FiCheckCircle size={48} />
-                    </div>
-                    <h1 className="text-3xl font-black text-gray-900 mb-4">Slot Booked!</h1>
-                    <p className="text-gray-600 mb-8 text-lg">
-                        Hi {form.name}, your request for <strong>{form.serviceType}</strong> on <strong>{form.date}</strong> at <strong>{form.timeSlot}</strong> has been received. Our technician will call you shortly to confirm.
-                    </p>
-                    <button
-                        onClick={() => window.location.href = '/'}
-                        className="w-full py-4 bg-[#0F1111] text-white font-bold rounded-full hover:bg-gray-800 transition-all"
-                    >
-                        Return to Home
-                    </button>
-                </motion.div>
-            </div>
-        );
-    }
+ if (submitted) {
+ return (
+ <div className="pt-32 pb-20 min-h-screen bg-white flex items-center justify-center">
+ <motion.div
+ initial={{ opacity: 0, scale: 0.9 }}
+ animate={{ opacity: 1, scale: 1 }}
+ className="max-w-md w-full text-center px-6"
+ >
+ <div className="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+ <FiCheckCircle size={48} />
+ </div>
+ <h1 className="text-3xl font-black text-gray-900 mb-4">Slot Booked!</h1>
+ <p className="text-gray-600 mb-8 text-lg">
+ Hi {form.name}, your request for <strong>{form.serviceType}</strong> on <strong>{form.date}</strong> at <strong>{form.timeSlot}</strong> has been received. Our technician will call you shortly to confirm.
+ </p>
+ <button
+ onClick={() => window.location.href = '/'}
+ className="w-full py-4 bg-[#0F1111] text-white font-bold rounded-full transition-all"
+ >
+ Return to Home
+ </button>
+ </motion.div>
+ </div>
+ );
+ }
 
-    return (
-        <div className="pt-24 min-h-screen bg-gray-50 pb-20">
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+ return (
+ <div className="pt-24 min-h-screen bg-gray-50 pb-20">
+ <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-                <div className="text-center mb-12">
-                    <p className="text-blue-600 font-bold uppercase tracking-widest text-xs mb-3">Professional Service</p>
-                    <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-4 uppercase tracking-tighter">Book a Technician</h1>
-                    <p className="text-gray-500 max-w-2xl mx-auto text-lg">
-                        Schedule a certified SecureVision expert for your installation, maintenance, or security assessment.
-                    </p>
-                </div>
+ <div className="text-center mb-12">
+ <p className="text-blue-600 font-bold uppercase tracking-widest text-xs mb-3">Professional Service</p>
+ <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-4 uppercase tracking-tighter">Book a Technician</h1>
+ <p className="text-gray-500 max-w-2xl mx-auto text-lg">
+ Schedule a certified SecureVision expert for your installation, maintenance, or security assessment.
+ </p>
+ </div>
 
-                <div className="grid lg:grid-cols-3 gap-8">
+ <div className="grid lg:grid-cols-3 gap-8">
 
-                    {/* Left: Progress/Info */}
-                    <div className="space-y-6">
-                        <div className="bg-white p-6 border border-gray-100 shadow-sm rounded-2xl">
-                            <h3 className="font-bold text-gray-900 mb-6 border-b pb-4 flex items-center gap-2">
-                                <FiShield className="text-blue-600" /> Why SecureVision?
-                            </h3>
-                            <div className="space-y-4">
-                                {[
-                                    { t: 'Certified Experts', d: 'All technicians are backgrounds-verified & trained.' },
-                                    { t: 'Punctual Service', d: 'We value your time. If we are late, you get a discount.' },
-                                    { t: 'Post-Install Support', d: 'Get 30 days of free technical assistance.' }
-                                ].map((item, i) => (
-                                    <div key={i} className="flex gap-3">
-                                        <FiCheckCircle className="text-green-500 mt-1 flex-shrink-0" />
-                                        <div>
-                                            <p className="text-sm font-bold text-gray-900">{item.t}</p>
-                                            <p className="text-xs text-gray-500 mt-1">{item.d}</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+ {/* Left: Progress/Info */}
+ <div className="space-y-6">
+ <div className="bg-white p-6 border border-gray-100 shadow-sm rounded-2xl">
+ <h3 className="font-bold text-gray-900 mb-6 border-b pb-4 flex items-center gap-2">
+ <FiShield className="text-blue-600" /> Why SecureVision?
+ </h3>
+ <div className="space-y-4">
+ {[
+ { t: 'Certified Experts', d: 'All technicians are backgrounds-verified & trained.' },
+ { t: 'Punctual Service', d: 'We value your time. If we are late, you get a discount.' },
+ { t: 'Post-Install Support', d: 'Get 30 days of free technical assistance.' }
+ ].map((item, i) => (
+ <div key={i} className="flex gap-3">
+ <FiCheckCircle className="text-green-500 mt-1 flex-shrink-0" />
+ <div>
+ <p className="text-sm font-bold text-gray-900">{item.t}</p>
+ <p className="text-xs text-gray-500 mt-1">{item.d}</p>
+ </div>
+ </div>
+ ))}
+ </div>
+ </div>
 
-                        <div className="p-6 bg-blue-600 rounded-2xl text-white shadow-xl shadow-blue-100">
-                            <p className="text-xs uppercase tracking-widest mb-1 opacity-80 font-bold">24/7 Helpline</p>
-                            <p className="text-2xl font-black mb-4">+1 800 123 4567</p>
-                            <p className="text-sm opacity-90 leading-relaxed">Call us directly if you need emergency support or have specific technical queries.</p>
-                        </div>
-                    </div>
+ <div className="p-6 bg-blue-600 rounded-2xl text-white shadow-xl ">
+ <p className="text-xs uppercase tracking-widest mb-1 opacity-80 font-bold">24/7 Helpline</p>
+ <p className="text-2xl font-black mb-4">+1 800 123 4567</p>
+ <p className="text-sm opacity-90 leading-relaxed">Call us directly if you need emergency support or have specific technical queries.</p>
+ </div>
+ </div>
 
-                    {/* Right: Booking Form */}
-                    <div className="lg:col-span-2">
-                        <div className="bg-white p-8 md:p-10 border border-gray-100 shadow-xl rounded-3xl">
-                            <form onSubmit={handleSubmit} className="space-y-6">
+ {/* Right: Booking Form */}
+ <div className="lg:col-span-2">
+ <div className="bg-white p-8 md:p-10 border border-gray-100 shadow-xl rounded-3xl">
+ <form onSubmit={handleSubmit} className="space-y-6">
 
-                                <div className="grid md:grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-black uppercase text-gray-400 flex items-center gap-2">
-                                            <FiUser /> Full Name
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="name"
-                                            required
-                                            value={form.name}
-                                            onChange={handleChange}
-                                            placeholder="Jane Cooper"
-                                            className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-black uppercase text-gray-400 flex items-center gap-2">
-                                            <FiPhone /> Phone Number
-                                        </label>
-                                        <input
-                                            type="tel"
-                                            name="phone"
-                                            required
-                                            value={form.phone}
-                                            onChange={handleChange}
-                                            placeholder="+91 00000 00000"
-                                            className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                                        />
-                                    </div>
-                                </div>
+ <div className="grid md:grid-cols-2 gap-6">
+ <div className="space-y-2">
+ <label className="text-xs font-black uppercase text-gray-400 flex items-center gap-2">
+ <FiUser /> Full Name
+ </label>
+ <input
+ type="text"
+ name="name"
+ required
+ value={form.name}
+ onChange={handleChange}
+ placeholder="Jane Cooper"
+ className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+ />
+ </div>
+ <div className="space-y-2">
+ <label className="text-xs font-black uppercase text-gray-400 flex items-center gap-2">
+ <FiPhone /> Phone Number
+ </label>
+ <input
+ type="tel"
+ name="phone"
+ required
+ value={form.phone}
+ onChange={handleChange}
+ placeholder="+91 00000 00000"
+ className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+ />
+ </div>
+ </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-xs font-black uppercase text-gray-400 flex items-center gap-2">
-                                        <FiMapPin /> Visit Address
-                                    </label>
-                                    <textarea
-                                        name="address"
-                                        required
-                                        rows={2}
-                                        value={form.address}
-                                        onChange={handleChange}
-                                        placeholder="Enter your full installation address..."
-                                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none"
-                                    />
-                                </div>
+ <div className="space-y-2">
+ <label className="text-xs font-black uppercase text-gray-400 flex items-center gap-2">
+ <FiMapPin /> Visit Address
+ </label>
+ <textarea
+ name="address"
+ required
+ rows={2}
+ value={form.address}
+ onChange={handleChange}
+ placeholder="Enter your full installation address..."
+ className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none"
+ />
+ </div>
 
-                                <div className="grid md:grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-black uppercase text-gray-400 flex items-center gap-2">
-                                            <FiCalendar /> Preferred Date
-                                        </label>
-                                        <input
-                                            type="date"
-                                            name="date"
-                                            required
-                                            value={form.date}
-                                            onChange={handleChange}
-                                            className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-black uppercase text-gray-400 flex items-center gap-2">
-                                            <FiClock /> Time Slot
-                                        </label>
-                                        <select
-                                            name="timeSlot"
-                                            required
-                                            value={form.timeSlot}
-                                            onChange={handleChange}
-                                            className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all cursor-pointer appearance-none"
-                                        >
-                                            <option value="">Select a slot...</option>
-                                            <option value="Morning (9 AM - 12 PM)">Morning (9 AM - 12 PM)</option>
-                                            <option value="Afternoon (12 PM - 3 PM)">Afternoon (12 PM - 3 PM)</option>
-                                            <option value="Evening (3 PM - 6 PM)">Evening (3 PM - 6 PM)</option>
-                                        </select>
-                                    </div>
-                                </div>
+ <div className="grid md:grid-cols-2 gap-6">
+ <div className="space-y-2">
+ <label className="text-xs font-black uppercase text-gray-400 flex items-center gap-2">
+ <FiCalendar /> Preferred Date
+ </label>
+ <input
+ type="date"
+ name="date"
+ required
+ value={form.date}
+ onChange={handleChange}
+ className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+ />
+ </div>
+ <div className="space-y-2">
+ <label className="text-xs font-black uppercase text-gray-400 flex items-center gap-2">
+ <FiClock /> Time Slot
+ </label>
+ <select
+ name="timeSlot"
+ required
+ value={form.timeSlot}
+ onChange={handleChange}
+ className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all cursor-pointer appearance-none"
+ >
+ <option value="">Select a slot...</option>
+ <option value="Morning (9 AM - 12 PM)">Morning (9 AM - 12 PM)</option>
+ <option value="Afternoon (12 PM - 3 PM)">Afternoon (12 PM - 3 PM)</option>
+ <option value="Evening (3 PM - 6 PM)">Evening (3 PM - 6 PM)</option>
+ </select>
+ </div>
+ </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-xs font-black uppercase text-gray-400">Select Service Type</label>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                        {['CCTV Installation', 'Maintenance', 'Consultation', 'System Repair', 'Networking'].map((s) => (
-                                            <button
-                                                key={s}
-                                                type="button"
-                                                onClick={() => setForm({ ...form, serviceType: s })}
-                                                className={`py-3 px-4 rounded-xl text-xs font-bold transition-all border ${form.serviceType === s ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-100' : 'bg-white border-gray-100 text-gray-600 hover:border-blue-300'}`}
-                                            >
-                                                {s}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
+ <div className="space-y-2">
+ <label className="text-xs font-black uppercase text-gray-400">Select Service Type</label>
+ <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+ {['CCTV Installation', 'Maintenance', 'Consultation', 'System Repair', 'Networking'].map((s) => (
+ <button
+ key={s}
+ type="button"
+ onClick={() => setForm({ ...form, serviceType: s })}
+ className={`py-3 px-4 rounded-xl text-xs font-bold transition-all border ${form.serviceType === s ? 'bg-blue-600 border-blue-600 text-white shadow-lg ' : 'bg-white border-gray-100 text-gray-600 '}`}
+ >
+ {s}
+ </button>
+ ))}
+ </div>
+ </div>
 
-                                <div className="pt-6">
-                                    <button
-                                        type="submit"
-                                        className="w-full py-5 bg-[#0F1111] text-white font-black rounded-2xl flex items-center justify-center gap-3 hover:bg-gray-800 transition-all hover:scale-[1.01] active:scale-[0.98] shadow-xl shadow-gray-200 uppercase tracking-widest text-sm"
-                                    >
-                                        Confirm Booking <FiArrowRight />
-                                    </button>
-                                    <p className="text-center text-[10px] text-gray-400 mt-4 uppercase font-bold tracking-widest">No upfront payment required for slot booking</p>
-                                </div>
+ <div className="pt-6">
+ <button
+ type="submit"
+ className="w-full py-5 bg-[#0F1111] text-white font-black rounded-2xl flex items-center justify-center gap-3 transition-all hover:scale-[1.01] active:scale-[0.98] shadow-xl shadow-gray-200 uppercase tracking-widest text-sm"
+ >
+ Confirm Booking <FiArrowRight />
+ </button>
+ <p className="text-center text-[10px] text-gray-400 mt-4 uppercase font-bold tracking-widest">No upfront payment required for slot booking</p>
+ </div>
 
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <CTABanner />
-        </div>
-    );
+ </form>
+ </div>
+ </div>
+ </div>
+ </div>
+ <CTABanner />
+ </div>
+ );
 }

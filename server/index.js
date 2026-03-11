@@ -11,7 +11,7 @@ connectDB();
 // Middleware
 app.use(cors({
     origin: process.env.CLIENT_URL || 'http://localhost:5173',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     credentials: true,
 }));
 app.use(express.json());
@@ -23,6 +23,8 @@ app.use('/api/contact', require('./routes/contact'));
 app.use('/api/testimonials', require('./routes/testimonials'));
 app.use('/api/services', require('./routes/services'));
 app.use('/api/careers', require('./routes/careers'));
+app.use('/api/leave', require('./routes/leave'));
+
 
 // Health check
 app.get('/api/health', (req, res) => {
