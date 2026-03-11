@@ -64,8 +64,8 @@ export default function AdminDashboard() {
                                     : 'text-slate-500 '
                                     }`}
                             >
-                                <item.icon size={18} className={isActive ? 'text-[#2563eb]' : 'text-[#94a3b8] group-hover:text-[#0f172a]'} />
-                                <span className="hidden lg:block font-semibold text-sm tracking-tight">{item.label}</span>
+                                <item.icon size={22} className={isActive ? 'text-[#2563eb]' : 'text-[#94a3b8] group-hover:text-[#0f172a]'} />
+                                <span className="hidden lg:block font-semibold text-lg tracking-tight">{item.label}</span>
                             </button>
                         );
                     })}
@@ -74,9 +74,9 @@ export default function AdminDashboard() {
                 <div className="p-6 mt-auto border-t border-gray-100">
                     <button
                         onClick={handleLogout}
-                        className="w-full flex items-center justify-center lg:justify-start gap-4 px-4 py-3 text-red-500 font-medium text-base rounded-none transition-all"
+                        className="w-full flex items-center justify-center lg:justify-start gap-4 px-4 py-3 text-red-500 font-bold text-lg rounded-none transition-all"
                     >
-                        <FiLogOut size={20} className="" />
+                        <FiLogOut size={24} className="" />
                         <span className="hidden lg:block">Logout</span>
                     </button>
                 </div>

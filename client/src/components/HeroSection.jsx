@@ -59,7 +59,7 @@ export default function HeroSection() {
                         className="text-4xl sm:text-6xl font-extrabold mb-6 leading-tight text-white"
                     >
                         Advanced CCTV{' '}
-                        <span style={{ background: 'linear-gradient(135deg, #3b82f6, #60a5fa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                        <span className="text-gradient">
                             Surveillance
                         </span>{' '}
                         You Can Trust

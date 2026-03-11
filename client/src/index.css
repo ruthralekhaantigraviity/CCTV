@@ -105,23 +105,6 @@
     border: 1px solid var(--border);
   }
 
-  .btn-primary {
-  background-color: #ffffff !important;
-  color: #0f172a !important;
-  border: 1px solid #e2e8f0 !important;
-  box-shadow: none !important;
-  outline: none !important;
-  transition: all 0.2s ease;
-}
-
-  .btn-outline {
-  background-color: #ffffff !important;
-  color: #0f172a !important;
-  border: 1px solid #e2e8f0 !important;
-  box-shadow: none !important;
-  outline: none !important;
-}
-
   .section-title {
     color: var(--text-primary);
     @apply text-4xl font-bold mb-4;
@@ -158,8 +141,6 @@
 }
 
 /* ─── Global Dark Mode Overrides ─────────────────────────────── */
-/* Forces all hardcoded Tailwind classes to go dark when data-theme="dark" */
-
 [data-theme="dark"] .bg-white {
   background-color: var(--bg-card) !important;
 }
@@ -310,73 +291,49 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* ─── Dark Blue – Global Button Overrides ──────────────── */
-:root {
-  --dark-blue: #1e3a8a;
-  --dark-blue-hover: #1e40af;
-}
+/* ─── CUSTOM BUTTON STYLES (RESTRICTED) ──────────────── */
 
-/* Tailwind bg-blue-600 buttons */
-.bg-blue-600, button.bg-blue-600, a.bg-blue-600 {
+/* Plain black-outlined buttons (requested for products) */
+.btn-plain-outlined {
   background-color: #ffffff !important;
-  color: #0f172a !important;
-  border: 1px solid #e2e8f0 !important;
+  color: #000000 !important;
+  border: 1.5px solid #000000 !important;
   box-shadow: none !important;
   outline: none !important;
   transition: all 0.2s ease;
 }
 
-.bg-blue-600:hover, button.bg-blue-600:hover, a.bg-blue-600:hover, .hover\:bg-blue-700:hover {
-  background-color: #f8fafc !important;
-  border-color: #cbd5e1 !important;
-  color: #0f172a !important;
+.btn-plain-outlined:hover {
+  background-color: #f1f5f9 !important;
+  border-color: #000000 !important;
+  color: #000000 !important;
 }
 
-/* Tailwind bg-blue-700 */
-.bg-blue-700, button.bg-blue-700, a.bg-blue-700 {
+/* Standardizing slate-900 buttons to the same plain look */
+button.bg-slate-900,
+.bg-slate-900 {
   background-color: #ffffff !important;
-  color: #0f172a !important;
-  border: 1px solid #e2e8f0 !important;
+  color: #000000 !important;
+  border: 1.5px solid #000000 !important;
   box-shadow: none !important;
   outline: none !important;
   transition: all 0.2s ease;
 }
 
-/* Utility class .btn-primary */
+/* Ensure global blue buttons remain SOLID unless explicitly styled */
+/* No global override for .bg-blue-600 here */
+
 .btn-primary {
   background-color: #ffffff !important;
-  color: #0f172a !important;
-  border: 1px solid #e2e8f0 !important;
+  color: #000000 !important;
+  border: 1.5px solid #000000 !important;
   box-shadow: none !important;
   outline: none !important;
   transition: all 0.2s ease;
 }
 
 .btn-primary:hover {
-  background-color: #f8fafc !important;
-  border-color: #cbd5e1 !important;
-  color: #0f172a !important;
-}
-
-/* Outline buttons */
-.btn-outline {
-  background-color: #ffffff !important;
-  color: #0f172a !important;
-  border: 1px solid #e2e8f0 !important;
-  box-shadow: none !important;
-  outline: none !important;
-}
-
-.btn-outline:hover {
-  background-color: #f8fafc !important;
-  border-color: #cbd5e1 !important;
-  color: #0f172a !important;
-}
-button.bg-slate-900, .bg-slate-900 {
-  background-color: #ffffff !important;
-  color: #0f172a !important;
-  border: 1px solid #e2e8f0 !important;
-  box-shadow: none !important;
-  outline: none !important;
-  transition: all 0.2s ease;
+  background-color: #f1f5f9 !important;
+  border-color: #000000 !important;
+  color: #000000 !important;
 }

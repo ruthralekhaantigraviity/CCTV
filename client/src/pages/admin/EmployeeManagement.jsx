@@ -48,7 +48,7 @@ export default function EmployeeManagement() {
                 <div>
                     <h1 className="text-3xl font-black text-slate-900 tracking-tighter">Employee Management</h1>
                 </div>
-                <button className="flex items-center gap-2 px-6 py-3 bg-[#1e3a8a] text-white text-[10px] font-black uppercase tracking-widest">
+                <button className="flex items-center gap-2 px-6 py-3 bg-white border-2 border-black text-black hover:bg-gray-100 text-[10px] font-black uppercase tracking-widest rounded-none transition-all">
                     <FiPlusCircle size={16} /> Add Employee
                 </button>
             </div>
