@@ -229,7 +229,7 @@ export default function EmployeeDashboard() {
     const filteredJobs = jobs.filter(job => {
         const matchesWorkflow =
             (workflowTab === 'available' && job.status === 'pending' && !ignoredJobs.includes(job._id)) ||
-            (workflowTab === 'my-jobs' && (job.status === 'accepted' || job.status === 'progress') && job.assignedEmployee?._id === user?.id) ||
+            (workflowTab === 'my-jobs' && (job.status === 'claimed' || job.status === 'assigned' || job.status === 'progress') && job.assignedEmployee?._id === user?.id) ||
             (workflowTab === 'completed' && job.status === 'completed' && job.assignedEmployee?._id === user?.id);
 
         const matchesSearch = true; // Search removed
@@ -263,11 +263,14 @@ export default function EmployeeDashboard() {
                         <FiBriefcase size={24} />
                     </div>
                     <div className={`px-4 py-1.5 rounded-none text-xs font-semibold ${job.status === 'pending' ? 'bg-red-50 text-red-600' :
-                        job.status === 'accepted' ? 'bg-green-50 text-green-600' :
-                            job.status === 'progress' ? 'bg-purple-50 text-purple-600' :
-                                'bg-blue-50 text-blue-600'
+                        job.status === 'claimed' ? 'bg-amber-50 text-amber-600' :
+                            job.status === 'assigned' ? 'bg-green-50 text-green-600' :
+                                job.status === 'progress' ? 'bg-purple-50 text-purple-600' :
+                                    'bg-blue-50 text-blue-600'
                         }`}>
-                        {isTakenByOther ? `Taken by ${job.assignedEmployee?.name || 'Technician'}` : job.status.replace('_', ' ')}
+                        {isTakenByOther ? `Taken by ${job.assignedEmployee?.name || 'Technician'}` :
+                            (job.status === 'claimed' && isAssignedToMe) ? 'Claimed - Awaiting Admin' :
+                                job.status.replace('_', ' ')}
                     </div>
                 </div>
 
@@ -344,17 +347,23 @@ export default function EmployeeDashboard() {
                     )}
 
                     {isTakenByOther && (
-                        <div className="flex items-center justify-center gap-2 text-gray-400 font-semibold text-xs py-5 bg-gray-50 rounded-none border border-gray-100">
-                            Already Taken
+                        <div className="flex items-center justify-center gap-2 text-gray-400 font-semibold text-xs py-5 bg-gray-50 rounded-none border border-gray-100 italic">
+                            Already Taken by {job.assignedEmployee?.name || 'Technician'}
                         </div>
                     )}
 
-                    {isAssignedToMe && job.status === 'accepted' && (
+                    {isAssignedToMe && job.status === 'claimed' && (
+                        <div className="flex items-center justify-center gap-2 text-amber-500 font-semibold text-xs py-5 bg-amber-50 rounded-none border border-amber-100">
+                            Awaiting Admin Assignment
+                        </div>
+                    )}
+
+                    {isAssignedToMe && job.status === 'assigned' && (
                         <button
                             onClick={() => handleUpdateStatus(job._id, 'progress')}
                             className="w-full py-5 bg-[#10b981] text-white font-semibold rounded-none transition-all text-xs"
                         >
-                            Enter Progress Stage
+                            Start Mission
                         </button>
                     )}
                     {isAssignedToMe && job.status === 'progress' && (
@@ -431,7 +440,7 @@ export default function EmployeeDashboard() {
                         <div className="p-3 bg-amber-100 rounded-none text-amber-600"><FiBriefcase size={24} /></div>
                         <span className="text-xs font-semibold bg-amber-100 text-amber-700 px-3 py-1 rounded-none">My Jobs</span>
                     </div>
-                    <p className="text-4xl font-semibold mb-1">{jobs.filter(j => j.status === 'accepted' || j.status === 'progress').length}</p>
+                    <p className="text-4xl font-semibold mb-1">{jobs.filter(j => j.status === 'claimed' || j.status === 'assigned' || j.status === 'progress').length}</p>
                     <p className="text-xs font-semibold opacity-70 flex items-center gap-1 text-amber-600">View active assignments <FiChevronRight /></p>
                 </div>
 
@@ -529,8 +538,9 @@ export default function EmployeeDashboard() {
                                 </div>
                                 <div className="flex items-center gap-8">
                                     <div className={`px-4 py-1.5 rounded-none text-xs font-semibold ${job.status === 'pending' ? 'bg-red-50 text-red-600' :
-                                        job.status === 'accepted' ? 'bg-green-50 text-green-600' :
-                                            'bg-blue-50 text-blue-600'
+                                        job.status === 'assigned' ? 'bg-green-50 text-green-600' :
+                                            job.status === 'claimed' ? 'bg-amber-50 text-amber-600' :
+                                                'bg-blue-50 text-blue-600'
                                         }`}>
                                         {job.status.replace('_', ' ')}
                                     </div>

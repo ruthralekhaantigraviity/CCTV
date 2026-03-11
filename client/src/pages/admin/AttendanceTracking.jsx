@@ -15,8 +15,8 @@ export default function AttendanceTracking() {
  try {
  const token = localStorage.getItem('token');
  const [attRes, empRes] = await Promise.all([
- axios.get('http://localhost:5000/api/attendance', { headers: { Authorization: `Bearer ${token}` } }),
- axios.get('http://localhost:5000/api/auth/employees', { headers: { Authorization: `Bearer ${token}` } }),
+ axios.get('/api/attendance', { headers: { Authorization: `Bearer ${token}` } }),
+ axios.get('/api/auth/employees', { headers: { Authorization: `Bearer ${token}` } }),
  ]);
  setAttendance(attRes.data.data || []);
  setEmployees(empRes.data.data || []);

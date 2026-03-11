@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { FiFileText, FiCheck, FiX, FiClock, FiCalendar, FiSearch } from 'react-icons/fi';
 import axios from 'axios';
 
-const API = 'http://localhost:5000/api/leave';
+const API = '/api/leave';
 
 export default function AdminLeave() {
     const [leaves, setLeaves] = useState([]);

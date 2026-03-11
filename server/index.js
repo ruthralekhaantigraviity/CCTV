@@ -9,11 +9,17 @@ const app = express();
 connectDB();
 
 // Middleware
+app.use((req, res, next) => {
+    console.log(`[${new Date().toLocaleTimeString()}] ${req.method} ${req.url}`);
+    next();
+});
+
 app.use(cors({
     origin: process.env.CLIENT_URL || 'http://localhost:5173',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     credentials: true,
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -24,16 +30,23 @@ app.use('/api/testimonials', require('./routes/testimonials'));
 app.use('/api/services', require('./routes/services'));
 app.use('/api/careers', require('./routes/careers'));
 app.use('/api/leave', require('./routes/leave'));
+app.use('/api/jobs', require('./routes/jobs'));
+app.use('/api/notifications', require('./routes/notifications'));
+app.use('/api/attendance', require('./routes/attendance'));
 
-
-// Health check
 app.get('/api/health', (req, res) => {
-    res.json({ status: 'OK', message: 'SecureVision API is running' });
+    res.json({
+        status: 'OK',
+        message: 'SecureVision API is running',
+        timestamp: new Date(),
+        routes: ['auth', 'jobs', 'notifications', 'attendance', 'contact', 'services']
+    });
 });
 
 // 404 handler
 app.use((req, res) => {
-    res.status(404).json({ success: false, message: 'Route not found' });
+    console.log(`[404] No match for ${req.method} ${req.url}`);
+    res.status(404).json({ success: false, message: 'API Route not found on SecureVision Backend' });
 });
 
 // Error handler
@@ -47,3 +60,5 @@ app.listen(PORT, () => {
     console.log(`🚀 SecureVision API server running on port ${PORT}`);
     console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
+
+module.exports = app;

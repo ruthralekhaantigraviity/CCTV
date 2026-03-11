@@ -16,7 +16,7 @@ export default function InventoryManagement() {
  const fetchProducts = async () => {
  try {
  const token = localStorage.getItem('token');
- const res = await axios.get('http://localhost:5000/api/products', { headers: { Authorization: `Bearer ${token}` } });
+ const res = await axios.get('/api/products', { headers: { Authorization: `Bearer ${token}` } });
  setProducts(res.data.data || []);
  } catch (err) {
  console.error('Failed to fetch products');
@@ -28,7 +28,7 @@ export default function InventoryManagement() {
  const handleAddProduct = async () => {
  try {
  const token = localStorage.getItem('token');
- await axios.post('http://localhost:5000/api/products', newProduct, { headers: { Authorization: `Bearer ${token}` } });
+ await axios.post('/api/products', newProduct, { headers: { Authorization: `Bearer ${token}` } });
  setNewProduct({ name: '', category: '', price: '', quantity: '', description: '' });
  setShowAddModal(false);
  fetchProducts();
@@ -41,7 +41,7 @@ export default function InventoryManagement() {
  if (!window.confirm('Delete this product?')) return;
  try {
  const token = localStorage.getItem('token');
- await axios.delete(`http://localhost:5000/api/products/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+ await axios.delete(`/api/products/${id}`, { headers: { Authorization: `Bearer ${token}` } });
  fetchProducts();
  } catch (err) {
  console.error('Failed to delete product');

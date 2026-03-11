@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { FiMail, FiSearch, FiCheck, FiTrash2, FiInbox, FiMessageCircle } from 'react-icons/fi';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/contact';
+const API_URL = '/api/contact';
 
 export default function EnquiryManagement() {
     const [enquiries, setEnquiries] = useState([]);

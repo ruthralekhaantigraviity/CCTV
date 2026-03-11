@@ -20,9 +20,32 @@ export default function BookTechnician() {
 
     const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setSubmitted(true);
+        try {
+            const response = await fetch('/api/jobs', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    customerName: form.name,
+                    customerPhone: form.phone,
+                    customerAddress: form.address,
+                    serviceType: form.serviceType,
+                    date: form.date,
+                    timeSlot: form.timeSlot,
+                    problemDescription: form.message
+                })
+            });
+            const data = await response.json();
+            if (data.success) {
+                setSubmitted(true);
+            } else {
+                alert(data.message || 'Failed to book slot. Please try again.');
+            }
+        } catch (error) {
+            console.error('Booking error:', error);
+            alert('A network error occurred. Please try again.');
+        }
     };
 
     if (submitted) {

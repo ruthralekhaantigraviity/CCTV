@@ -18,10 +18,10 @@ export default function AdminAttendance() {
             try {
                 const token = localStorage.getItem('token');
                 const [attRes, empRes] = await Promise.all([
-                    axios.get('http://localhost:5000/api/attendance', {
+                    axios.get('/api/attendance', {
                         headers: { Authorization: `Bearer ${token}` }
                     }),
-                    axios.get('http://localhost:5000/api/auth/employees', {
+                    axios.get('/api/auth/employees', {
                         headers: { Authorization: `Bearer ${token}` }
                     }),
                 ]);

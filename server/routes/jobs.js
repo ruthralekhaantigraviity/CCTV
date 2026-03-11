@@ -72,7 +72,7 @@ router.patch('/:id/assign', async (req, res) => {
         if (!job) return res.status(404).json({ success: false, message: 'Job not found' });
 
         job.assignedEmployee = employeeId;
-        job.status = 'accepted'; // Or a separate 'assigned' status
+        job.status = 'assigned';
         job.acceptedAt = new Date();
         await job.save();
 
@@ -100,13 +100,30 @@ router.patch('/:id/accept', async (req, res) => {
         if (!job) return res.status(404).json({ success: false, message: 'Job not found' });
 
         if (job.status !== 'pending') {
-            return res.status(400).json({ success: false, message: 'Job already accepted or assigned' });
+            return res.status(400).json({ success: false, message: 'Job already claimed or assigned' });
         }
 
         job.assignedEmployee = employeeId;
-        job.status = 'accepted';
+        job.status = 'claimed';
         job.acceptedAt = new Date();
         await job.save();
+
+        // Notify Admin that someone claimed the job
+        try {
+            const admin = await User.findOne({ email: 'admin@sv.com' });
+            if (admin) {
+                const employee = await User.findById(employeeId);
+                await Notification.create({
+                    recipientRole: 'admin',
+                    recipient: admin._id,
+                    message: `${employee?.name || 'An employee'} has claimed the job for ${job.serviceType}. Please finalize assignment.`,
+                    type: 'status_change',
+                    relatedId: job._id
+                });
+            }
+        } catch (err) {
+            console.error('Admin notification failed:', err.message);
+        }
 
         res.json({ success: true, data: job });
     } catch (error) {

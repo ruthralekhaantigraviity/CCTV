@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FiCalendar, FiClock, FiCheckCircle, FiXCircle, FiPlusCircle, FiX } from 'react-icons/fi';
 import axios from 'axios';
 
-const API = 'http://localhost:5000/api/leave';
+const API = '/api/leave';
 
 const leaveTypes = ['Sick Leave', 'Casual Leave', 'Privilege Leave', 'Emergency Leave'];
 

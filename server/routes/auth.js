@@ -3,6 +3,7 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { protect } = require('../middleware/authMiddleware');
+const { admin } = require('../middleware/adminMiddleware');
 
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET || 'securevision_secret_123', {
@@ -95,6 +96,18 @@ router.get('/profile', protect, async (req, res) => {
         } else {
             res.status(404).json({ success: false, message: 'User not found' });
         }
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// @desc    Get all employees
+// @route   GET /api/auth/employees
+// @access  Private/Admin
+router.get('/employees', protect, admin, async (req, res) => {
+    try {
+        const employees = await User.find({ role: 'employee' }).select('-password');
+        res.json({ success: true, data: employees });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }

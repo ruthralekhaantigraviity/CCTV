@@ -19,7 +19,7 @@ export default function InstallationTracking() {
         const fetchJobs = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const res = await axios.get('http://localhost:5000/api/jobs', { headers: { Authorization: `Bearer ${token}` } });
+                const res = await axios.get('/api/jobs', { headers: { Authorization: `Bearer ${token}` } });
                 setJobs(res.data.data || []);
             } catch (err) {
                 console.error('Failed to fetch jobs');

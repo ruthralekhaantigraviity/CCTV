@@ -12,7 +12,7 @@ export default function EmployeeManagement() {
         const fetchEmployees = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const res = await axios.get('http://localhost:5000/api/auth/employees', { headers: { Authorization: `Bearer ${token}` } });
+                const res = await axios.get('/api/auth/employees', { headers: { Authorization: `Bearer ${token}` } });
                 setEmployees(res.data.data || []);
             } catch (err) {
                 console.error('Failed to fetch employees');

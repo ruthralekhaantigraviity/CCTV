@@ -10,7 +10,7 @@ const jobSchema = new mongoose.Schema({
     timeSlot: { type: String, required: true },
     status: {
         type: String,
-        enum: ['pending', 'accepted', 'progress', 'completed', 'cancelled'],
+        enum: ['pending', 'claimed', 'assigned', 'progress', 'completed', 'cancelled'],
         default: 'pending'
     },
     assignedEmployee: {
