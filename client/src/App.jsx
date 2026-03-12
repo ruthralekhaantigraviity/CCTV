@@ -18,6 +18,8 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import FloatingWidgets from './components/FloatingWidgets';
 import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
+import CartDrawer from './components/CartDrawer';
 import Dashboard from './pages/Dashboard';
 import AdminLogin from './pages/AdminLogin';
 import AdminSignup from './pages/AdminSignup';
@@ -28,11 +30,14 @@ import EmployeeLogin from './pages/EmployeeLogin';
 function App() {
   return (
     <AuthProvider>
-      <ThemeProvider>
-        <Router>
-          <AppContent />
-        </Router>
-      </ThemeProvider>
+      <CartProvider>
+        <ThemeProvider>
+          <Router>
+            <AppContent />
+            <CartDrawer />
+          </Router>
+        </ThemeProvider>
+      </CartProvider>
     </AuthProvider>
   );
 }

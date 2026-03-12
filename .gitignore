@@ -1,14 +1,43 @@
+# Dependencies
 node_modules/
+.pnp
+.pnp.js
+
+# Environment variables — NEVER commit secrets
 .env
-.DS_Store
+.env.local
+.env.*.local
+
+# Build outputs
 dist/
 build/
+.next/
+
+# Logs
+logs/
 *.log
-.vscode/
-.idea/
-*.blend1
-render/
-client/node_modules/
-server/node_modules/
-client/dist/
-server/dist/
+npm-debug.log*
+
+# Cache
+.cache/
+.vite/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary / scratch files
+server/create_employee.js
+server/create_customer.js
+server/create_temp_admin.js
+server/dump_jobs.js
+server/dump_users.js
+server/list_users.js
+server/promote_admin.js
+server/seed.js
+server/debug_routes.js
+server/test_*.js
+server/booking_test.json
+
+# Vite temp files
+client/vite.config.js.timestamp-*

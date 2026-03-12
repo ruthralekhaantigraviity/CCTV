@@ -3,9 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
     FiSearch, FiChevronDown, FiChevronUp, FiStar,
-    FiHeart, FiShoppingBag
+    FiHeart, FiShoppingBag, FiCheck
 } from 'react-icons/fi';
 import { products } from '../data/products';
+import { useCart } from '../context/CartContext';
 
 export default function Products() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -16,6 +17,14 @@ export default function Products() {
     const [priceRange, setPriceRange] = useState(50000);
     const [reviews, setReviews] = useState(0);
     const [sortBy, setSortBy] = useState('Default Sorting');
+    const [addedMap, setAddedMap] = useState({});
+    const { addToCart } = useCart();
+
+    const handleAddToCart = (product) => {
+        addToCart(product);
+        setAddedMap(prev => ({ ...prev, [product.id]: true }));
+        setTimeout(() => setAddedMap(prev => ({ ...prev, [product.id]: false })), 1500);
+    };
 
     // Update local search term when URL param changes
     useEffect(() => {
@@ -262,8 +271,16 @@ export default function Products() {
                                             >
                                                 View Details
                                             </Link>
-                                            <button className="p-3 bg-gray-100 text-gray-600 rounded-none transition-all">
-                                                <FiShoppingBag />
+                                            <button
+                                                onClick={() => handleAddToCart(p)}
+                                                title="Add to Cart"
+                                                className={`p-3 rounded-none transition-all ${
+                                                    addedMap[p.id]
+                                                        ? 'bg-green-500 text-white'
+                                                        : 'bg-gray-100 text-gray-600 hover:bg-blue-600 hover:text-white'
+                                                }`}
+                                            >
+                                                {addedMap[p.id] ? <FiCheck /> : <FiShoppingBag />}
                                             </button>
                                         </div>
                                     </div>

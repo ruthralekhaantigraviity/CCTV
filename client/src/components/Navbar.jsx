@@ -3,17 +3,19 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     FiCamera, FiMenu, FiX, FiUser, FiLogIn,
-    FiSun, FiMoon, FiSearch, FiPhone, FiMapPin
+    FiSun, FiMoon, FiSearch, FiPhone, FiMapPin, FiShoppingBag
 } from 'react-icons/fi';
 import {
     FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn
 } from 'react-icons/fa';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 
 export default function Navbar() {
     const { theme, toggleTheme } = useTheme();
     const { user, logout } = useAuth();
+    const { totalItems, setIsOpen: openCart } = useCart();
     const [scrolled, setScrolled] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -132,6 +134,21 @@ export default function Navbar() {
                                 </>
                             )}
                         </div>
+
+                        {/* Cart Icon */}
+                        <button
+                            onClick={() => openCart(true)}
+                            className="relative hidden lg:flex items-center justify-center w-10 h-10 rounded-lg transition-all"
+                            style={{ color: 'var(--text-secondary)' }}
+                            title="Cart"
+                        >
+                            <FiShoppingBag size={20} />
+                            {totalItems > 0 && (
+                                <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center">
+                                    {totalItems}
+                                </span>
+                            )}
+                        </button>
 
                         {/* Book a Technician CTA */}
                         <Link to="/book-technician" className="hidden lg:inline-flex bg-blue-600 text-white text-xs font-black uppercase tracking-widest px-8 py-3 rounded-full transition-all duration-200 whitespace-nowrap">

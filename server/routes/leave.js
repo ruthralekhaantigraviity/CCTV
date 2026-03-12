@@ -10,8 +10,12 @@ const { admin } = require('../middleware/adminMiddleware');
 router.post('/', protect, async (req, res) => {
     try {
         const { leaveType, startDate, endDate, days, reason } = req.body;
+        console.log('--- NEW LEAVE SUBMISSION (c6931ae) ---');
+        console.log('User:', req.user ? req.user.id : 'No user defined in request');
+        console.log('Body:', req.body);
 
         if (!startDate || !endDate || !days || !reason) {
+            console.log('Validation Error: Missing fields');
             return res.status(400).json({ success: false, message: 'All fields are required' });
         }
 
@@ -27,6 +31,7 @@ router.post('/', protect, async (req, res) => {
         const populated = await leave.populate('employee', 'name email');
         res.status(201).json({ success: true, data: populated });
     } catch (err) {
+        console.error('Leave Submission Caught Error:', err);
         res.status(500).json({ success: false, message: err.message });
     }
 });

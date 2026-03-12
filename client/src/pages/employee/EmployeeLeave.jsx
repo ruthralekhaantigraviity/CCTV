@@ -62,6 +62,7 @@ export default function EmployeeLeave() {
             setForm({ leaveType: 'Sick Leave', startDate: '', endDate: '', reason: '' });
             setShowForm(false);
             fetchMyLeaves();
+            alert('Leave request submitted successfully! The admin will review it shortly.');
         } catch (err) {
             console.error('Failed to submit leave request');
             alert('Failed to submit. Please try again.');

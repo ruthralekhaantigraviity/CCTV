@@ -1,0 +1,32 @@
+commit 7d60d8b2f510a82d05e164e61f45e2bfc0f089fe
+Author: ruthralekhaantigraviity@gmail.com <kmruthra01@gmail.com>
+Date:   Wed Mar 11 23:09:28 2026 +0530
+
+    Integrated real-time slot bookings, refined Admin Dashboard visibility, and standardized API endpoints
+
+M	client/src/context/AuthContext.jsx
+M	client/src/pages/BookTechnician.jsx
+M	client/src/pages/EmployeeDashboard.jsx
+M	client/src/pages/admin/AdminAttendance.jsx
+M	client/src/pages/admin/AdminBooking.jsx
+M	client/src/pages/admin/AdminDashboardHome.jsx
+M	client/src/pages/admin/AdminLeave.jsx
+M	client/src/pages/admin/AdminOverview.jsx
+M	client/src/pages/admin/AttendanceTracking.jsx
+M	client/src/pages/admin/EmployeeManagement.jsx
+M	client/src/pages/admin/EnquiryManagement.jsx
+M	client/src/pages/admin/InstallationTracking.jsx
+M	client/src/pages/admin/InventoryManagement.jsx
+M	client/src/pages/employee/EmployeeLeave.jsx
+M	client/src/pages/employee/MyMissions.jsx
+A	server/dump_jobs.js
+M	server/index.js
+M	server/models/Job.js
+M	server/models/User.js
+M	server/package.json
+M	server/routes/auth.js
+M	server/routes/jobs.js
+A	server/server_log.txt
+A	server/test_booking.js
+A	server/test_routes.js
+A	server/user_dump.json

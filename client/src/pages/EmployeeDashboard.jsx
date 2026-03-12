@@ -5,7 +5,7 @@ import {
     FiAlertCircle, FiTrendingUp, FiLogOut, FiLayout,
     FiBriefcase, FiCalendar, FiMessageSquare, FiSettings,
     FiBell, FiSearch, FiMenu, FiChevronRight, FiEdit2, FiEdit3, FiShield,
-    FiArrowRight, FiActivity, FiMail, FiMap, FiFileText
+    FiArrowRight, FiActivity, FiMail, FiMap, FiFileText, FiStar
 } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -943,14 +943,5 @@ export default function EmployeeDashboard() {
                 </main>
             </div>
         </div>
-    );
-}
-
-// Extra icons needed for profile
-function FiStar(props) {
-    return (
-        <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg" {...props}>
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-        </svg>
     );
 }

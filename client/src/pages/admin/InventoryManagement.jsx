@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FiBox, FiAlertCircle, FiPlusCircle, FiSearch, FiEdit2, FiTrash2, FiPackage } from 'react-icons/fi';
+import { FiBox, FiAlertCircle, FiPlusCircle, FiSearch, FiEdit2, FiTrash2, FiPackage, FiCamera } from 'react-icons/fi';
 import axios from 'axios';
 
 export default function InventoryManagement() {
