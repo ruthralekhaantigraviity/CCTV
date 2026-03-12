@@ -94,7 +94,7 @@ export default function AdminLogin() {
               
               <div className="p-3 bg-slate-900 text-white font-mono text-[9px] lowercase break-all opacity-95 border-l-4 border-blue-500 shadow-lg">
                 <span className="uppercase text-blue-400 font-bold block mb-1">🔍 Diagnostic Link (Check this!):</span>
-                API_REQ: {import.meta.env.VITE_API_URL || '(NOT SET - hitting Vercel domain)'}/api/auth/login
+                API_REQ: {import.meta.env.VITE_API_URL || 'https://cctv-kgck.onrender.com'}/api/auth/login
               </div>
             </div>
           )}
