@@ -61,18 +61,19 @@ app.use((err, req, res, next) => {
 });
 
 const startServer = async () => {
-    try {
-        // Connect to MongoDB
-        await connectDB();
+    // 1. Start the HTTP server immediately so it's "Online"
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => {
+        console.log(`🚀 SecureVision API server running on port ${PORT}`);
+        console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`);
+    });
 
-        const PORT = process.env.PORT || 5000;
-        app.listen(PORT, () => {
-            console.log(`🚀 SecureVision API server running on port ${PORT}`);
-            console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`);
-        });
+    // 2. Attempt DB connection in the background
+    try {
+        await connectDB();
     } catch (err) {
-        console.error('❌ Failed to start server:', err.message);
-        process.exit(1);
+        console.error('⚠️ Server started but MongoDB connection failed:', err.message);
+        console.error('   Please check your MongoDB Atlas IP Whitelist (add 0.0.0.0/0)');
     }
 };
 
