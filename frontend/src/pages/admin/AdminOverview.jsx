@@ -35,19 +35,19 @@ export default function AdminOverview() {
     }, []);
 
     const operationsStats = [
-        { label: 'Total Bookings', value: jobs.length.toString(), badge: 'LIVE', icon: FiCalendar, color: 'blue', badgeColor: 'emerald' },
-        { label: 'New Requests', value: jobs.filter(j => j.status === 'pending').length.toString(), badge: 'NEEDS ACTION', icon: FiClock, color: 'amber', badgeColor: 'slate' },
-        { label: 'In Progress', value: jobs.filter(j => j.status === 'progress').length.toString(), badge: 'ACTIVE', icon: FiTruck, color: 'orange', badgeColor: 'blue' },
-        { label: 'Completed', value: jobs.filter(j => j.status === 'completed').length.toString(), badge: 'DONE', icon: FiCheckCircle, color: 'emerald', badgeColor: 'emerald' },
+        { label: 'Total Bookings', value: (jobs || []).length.toString(), badge: 'LIVE', icon: FiCalendar, color: 'blue', badgeColor: 'emerald' },
+        { label: 'New Requests', value: (jobs || []).filter(j => j?.status === 'pending').length.toString(), badge: 'NEEDS ACTION', icon: FiClock, color: 'amber', badgeColor: 'slate' },
+        { label: 'In Progress', value: (jobs || []).filter(j => j?.status === 'progress').length.toString(), badge: 'ACTIVE', icon: FiTruck, color: 'orange', badgeColor: 'blue' },
+        { label: 'Completed', value: (jobs || []).filter(j => j?.status === 'completed').length.toString(), badge: 'DONE', icon: FiCheckCircle, color: 'emerald', badgeColor: 'emerald' },
     ];
 
     const today = new Date().toISOString().split('T')[0];
-    const presentToday = attendance.filter(a => a.date === today).length;
+    const presentToday = (attendance || []).filter(a => a?.date === today).length;
 
     const staffStats = [
-        { label: 'Total Employees', value: employees.length.toString(), badge: 'STABLE', icon: FiStaff, color: 'blue', badgeColor: 'slate' },
+        { label: 'Total Employees', value: (employees || []).length.toString(), badge: 'STABLE', icon: FiStaff, color: 'blue', badgeColor: 'slate' },
         { label: 'Present Today', value: presentToday.toString(), badge: 'LIVE', icon: FiUserCheck, color: 'emerald', badgeColor: 'emerald' },
-        { label: 'Technicians', value: employees.filter(e => e.role === 'employee').length.toString(), badge: 'FIELD', icon: FiPlayCircle, color: 'blue', badgeColor: 'indigo' },
+        { label: 'Technicians', value: (employees || []).filter(e => e?.role === 'employee').length.toString(), badge: 'FIELD', icon: FiPlayCircle, color: 'blue', badgeColor: 'indigo' },
     ];
 
     const StatCard = ({ stat, index }) => (
@@ -153,26 +153,26 @@ export default function AdminOverview() {
                                     <tr>
                                         <td colSpan="4" className="px-8 py-10 text-center text-slate-400 font-bold uppercase tracking-widest text-[10px]">No recent data</td>
                                     </tr>
-                                ) : jobs.slice(0, 5).map((job, i) => (
-                                    <tr key={job._id} className=" transition-colors">
-                                        <td className="px-8 py-5 font-bold text-slate-500">#SV-{job._id.slice(-4).toUpperCase()}</td>
-                                        <td className="px-8 py-5 font-black text-slate-800 uppercase tracking-tighter">{job.customerName}</td>
+                                ) : (jobs || []).slice(0, 5).map((job, i) => (
+                                    <tr key={job?._id || i} className=" transition-colors">
+                                        <td className="px-8 py-5 font-bold text-slate-500">#SV-{(job?._id || '').slice(-4).toUpperCase() || 'ID'}</td>
+                                        <td className="px-8 py-5 font-black text-slate-800 uppercase tracking-tighter">{job?.customerName || 'Anonymous'}</td>
                                         <td className="px-8 py-5">
                                             <div className="flex items-center gap-2">
                                                 <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-[9px] font-bold text-white ">
-                                                    {job.assignedEmployee?.name?.charAt(0).toUpperCase() || '?'}
+                                                    {job?.assignedEmployee?.name?.charAt(0).toUpperCase() || '?'}
                                                 </div>
-                                                <span className="font-bold text-slate-600">{job.assignedEmployee?.name || 'Unassigned'}</span>
+                                                <span className="font-bold text-slate-600">{job?.assignedEmployee?.name || 'Unassigned'}</span>
                                             </div>
                                         </td>
                                         <td className="px-8 py-5">
-                                            <div className={`flex items-center gap-2 font-black uppercase text-[8px] tracking-widest ${job.status === 'completed' || job.status === 'assigned' ? 'text-emerald-600' :
-                                                job.status === 'pending' ? 'text-amber-500' :
-                                                    job.status === 'progress' ? 'text-blue-600' :
-                                                        job.status === 'claimed' ? 'text-orange-500' : 'text-slate-400'
+                                            <div className={`flex items-center gap-2 font-black uppercase text-[8px] tracking-widest ${job?.status === 'completed' || job?.status === 'assigned' ? 'text-emerald-600' :
+                                                job?.status === 'pending' ? 'text-amber-500' :
+                                                    job?.status === 'progress' ? 'text-blue-600' :
+                                                        job?.status === 'claimed' ? 'text-orange-500' : 'text-slate-400'
                                                 }`}>
-                                                <div className={`w-1 h-1 rounded-full ${job.status === 'completed' || job.status === 'assigned' ? 'bg-emerald-500' : 'bg-current animate-pulse'}`} />
-                                                {job.status === 'assigned' ? 'CONFIRMED' : job.status === 'claimed' ? 'AGENT REQ' : job.status === 'pending' ? 'NEW' : job.status}
+                                                <div className={`w-1 h-1 rounded-full ${job?.status === 'completed' || job?.status === 'assigned' ? 'bg-emerald-500' : 'bg-current animate-pulse'}`} />
+                                                {(job?.status || 'pending') === 'assigned' ? 'CONFIRMED' : (job?.status || 'pending') === 'claimed' ? 'AGENT REQ' : (job?.status || 'pending') === 'pending' ? 'NEW' : job?.status}
                                             </div>
                                         </td>
                                     </tr>

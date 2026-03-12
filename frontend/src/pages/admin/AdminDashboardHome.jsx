@@ -35,19 +35,19 @@ export default function AdminDashboardHome() {
     }, []);
 
     const operationsStats = [
-        { label: 'Total Bookings', value: jobs.length.toString(), badge: 'LIVE', icon: FiCalendar, color: 'blue', badgeColor: 'emerald' },
-        { label: 'New Requests', value: jobs.filter(j => j.status === 'pending').length.toString(), badge: 'NEEDS ACTION', icon: FiClock, color: 'amber', badgeColor: 'slate' },
-        { label: 'In Progress', value: jobs.filter(j => j.status === 'progress').length.toString(), badge: 'ACTIVE', icon: FiTruck, color: 'orange', badgeColor: 'blue' },
-        { label: 'Completed', value: jobs.filter(j => j.status === 'completed').length.toString(), badge: 'DONE', icon: FiCheckCircle, color: 'emerald', badgeColor: 'emerald' },
+        { label: 'Total Bookings', value: (jobs || []).length.toString(), badge: 'LIVE', icon: FiCalendar, color: 'blue', badgeColor: 'emerald' },
+        { label: 'New Requests', value: (jobs || []).filter(j => j?.status === 'pending').length.toString(), badge: 'NEEDS ACTION', icon: FiClock, color: 'amber', badgeColor: 'slate' },
+        { label: 'In Progress', value: (jobs || []).filter(j => j?.status === 'progress').length.toString(), badge: 'ACTIVE', icon: FiTruck, color: 'orange', badgeColor: 'blue' },
+        { label: 'Completed', value: (jobs || []).filter(j => j?.status === 'completed').length.toString(), badge: 'DONE', icon: FiCheckCircle, color: 'emerald', badgeColor: 'emerald' },
     ];
 
     const today = new Date().toISOString().split('T')[0];
-    const presentToday = attendance.filter(a => a.date === today).length;
+    const presentToday = (attendance || []).filter(a => a?.date === today).length;
 
     const staffStats = [
-        { label: 'Total Employees', value: employees.length.toString(), badge: 'STABLE', icon: FiUsers, color: 'blue', badgeColor: 'slate' },
+        { label: 'Total Employees', value: (employees || []).length.toString(), badge: 'STABLE', icon: FiUsers, color: 'blue', badgeColor: 'slate' },
         { label: 'Present Today', value: presentToday.toString(), badge: 'LIVE', icon: FiUserCheck, color: 'emerald', badgeColor: 'emerald' },
-        { label: 'Technicians', value: employees.filter(e => e.role === 'employee').length.toString(), badge: 'FIELD', icon: FiPlayCircle, color: 'blue', badgeColor: 'indigo' },
+        { label: 'Technicians', value: (employees || []).filter(e => e?.role === 'employee').length.toString(), badge: 'FIELD', icon: FiPlayCircle, color: 'blue', badgeColor: 'indigo' },
     ];
 
     const getStatusLabel = (status) => {

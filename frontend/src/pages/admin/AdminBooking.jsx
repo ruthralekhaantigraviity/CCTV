@@ -28,10 +28,12 @@ export default function AdminBooking() {
                     axios.get('/api/jobs', { headers: { Authorization: `Bearer ${token}` } }),
                     axios.get('/api/auth/employees', { headers: { Authorization: `Bearer ${token}` } })
                 ]);
-                setJobs(jobsRes.data.data);
-                setEmployees(empsRes.data.data);
+                setJobs(jobsRes.data.data || []);
+                setEmployees(empsRes.data.data || []);
             } catch (err) {
                 console.error('Error fetching booking data:', err);
+                setJobs([]);
+                setEmployees([]);
             } finally {
                 setLoading(false);
             }
@@ -63,19 +65,19 @@ export default function AdminBooking() {
         }
     };
 
-    const filtered = jobs.filter(job => {
-        const matchSearch = job.customerName?.toLowerCase().includes(search.toLowerCase()) ||
-            job._id?.toLowerCase().includes(search.toLowerCase()) ||
-            job.serviceType?.toLowerCase().includes(search.toLowerCase());
-        const matchStatus = filterStatus === 'all' || job.status === filterStatus;
+    const filtered = (jobs || []).filter(job => {
+        const matchSearch = (job?.customerName || '').toLowerCase().includes(search.toLowerCase()) ||
+            (job?._id || '').toLowerCase().includes(search.toLowerCase()) ||
+            (job?.serviceType || '').toLowerCase().includes(search.toLowerCase());
+        const matchStatus = filterStatus === 'all' || job?.status === filterStatus;
         return matchSearch && matchStatus;
     });
 
     const stats = [
-        { label: 'Total Bookings', value: jobs.length, icon: FiCalendar, color: 'blue' },
-        { label: 'Completed', value: jobs.filter(j => j.status === 'completed').length, icon: FiCheckCircle, color: 'emerald' },
-        { label: 'In Progress', value: jobs.filter(j => j.status === 'progress').length, icon: FiClock, color: 'orange' },
-        { label: 'Pending', value: jobs.filter(j => j.status === 'pending').length, icon: FiAlertCircle, color: 'amber' },
+        { label: 'Total Bookings', value: (jobs || []).length, icon: FiCalendar, color: 'blue' },
+        { label: 'Completed', value: (jobs || []).filter(j => j?.status === 'completed').length, icon: FiCheckCircle, color: 'emerald' },
+        { label: 'In Progress', value: (jobs || []).filter(j => j?.status === 'progress').length, icon: FiClock, color: 'orange' },
+        { label: 'Pending', value: (jobs || []).filter(j => j?.status === 'pending').length, icon: FiAlertCircle, color: 'amber' },
     ];
 
     if (loading) return (
