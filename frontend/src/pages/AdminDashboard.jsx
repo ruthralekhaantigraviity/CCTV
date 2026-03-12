@@ -97,29 +97,21 @@ export default function AdminDashboard() {
             </aside>
 
             {/* Main Content Area */}
-            <main className="flex-grow lg:ml-72 p-6 lg:p-12 min-h-screen relative bg-gray-50/50">
-                <AnimatePresence mode="wait">
-                    <motion.div
-                        key={location.pathname}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.3 }}
-                    >
-                        <Routes>
-                            <Route index element={<AdminDashboardHome />} />
-                            <Route path="overview" element={<AdminOverview />} />
-                            <Route path="bookings" element={<AdminBooking />} />
-                            <Route path="products" element={<InventoryManagement />} />
-                            <Route path="employees" element={<EmployeeManagement />} />
-                            <Route path="attendance" element={<AdminAttendance />} />
-                            <Route path="leave" element={<AdminLeave />} />
-                            <Route path="tracked" element={<InstallationTracking />} />
-                            <Route path="enquiries" element={<EnquiryManagement />} />
-                            <Route path="settings" element={<AdminSettings />} />
-                        </Routes>
-                    </motion.div>
-                </AnimatePresence>
+            <main className="flex-grow lg:ml-72 p-6 lg:p-12 min-h-screen relative bg-white">
+                <div className="admin-content-wrapper">
+                    <Routes>
+                        <Route index element={<AdminDashboardHome />} />
+                        <Route path="overview" element={<AdminOverview />} />
+                        <Route path="bookings" element={<AdminBooking />} />
+                        <Route path="products" element={<InventoryManagement />} />
+                        <Route path="employees" element={<EmployeeManagement />} />
+                        <Route path="attendance" element={<AdminAttendance />} />
+                        <Route path="leave" element={<AdminLeave />} />
+                        <Route path="tracked" element={<InstallationTracking />} />
+                        <Route path="enquiries" element={<EnquiryManagement />} />
+                        <Route path="settings" element={<AdminSettings />} />
+                    </Routes>
+                </div>
             </main>
         </div>
     );

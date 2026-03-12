@@ -223,8 +223,9 @@
 }
 
 /* ─── Products page always stays LIGHT ──────────────────────── */
-[data-theme="dark"] .products-page, [data-theme="dark"] .admin-theme,
-[data-theme="dark"] .products-page, [data-theme="dark"] .admin-theme .bg-white {
+[data-theme="dark"] .products-page, 
+[data-theme="dark"] .admin-theme,
+[data-theme="dark"] .admin-theme .bg-white {
   background-color: white !important;
   color: #111827 !important;
 }
