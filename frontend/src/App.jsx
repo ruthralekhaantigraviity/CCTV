@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import axios from 'axios';
 import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -26,6 +27,10 @@ import AdminSignup from './pages/AdminSignup';
 import AdminDashboard from './pages/AdminDashboard';
 import EmployeeDashboard from './pages/EmployeeDashboard';
 import EmployeeLogin from './pages/EmployeeLogin';
+
+// Configure global axios base URL
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'https://cctv-kgck.onrender.com';
+axios.defaults.withCredentials = true;
 
 function App() {
   return (
