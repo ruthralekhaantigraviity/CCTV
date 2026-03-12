@@ -19,8 +19,8 @@ function runCommand(command, args, cwd, name) {
     return process;
 }
 
-const clientDir = path.join(__dirname, 'client');
-const serverDir = path.join(__dirname, 'server');
+const clientDir = path.join(__dirname, 'frontend');
+const serverDir = path.join(__dirname, 'backend');
 
 console.log('Starting client and server...');
 
