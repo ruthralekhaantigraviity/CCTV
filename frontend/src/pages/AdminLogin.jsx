@@ -93,7 +93,7 @@ export default function AdminLogin() {
       <div className="flex items-center gap-4">
         <FiShield className="text-lg flex-shrink-0" /> {error}
       </div>
-      {error.includes('NETWORK ERROR') && (
+      {error.toUpperCase().includes('NETWORK ERROR') && (
         <div className="mt-2 p-2 bg-white/50 border border-red-200 lowercase font-mono opacity-80 break-all">
           Target API: {import.meta.env.VITE_API_URL || '(NOT SET - using local proxy)'}/api/auth/login
         </div>
