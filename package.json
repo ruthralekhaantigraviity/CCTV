@@ -3,17 +3,17 @@
     "version": "1.0.0",
     "private": true,
     "workspaces": [
-        "client",
-        "server"
+        "frontend",
+        "backend"
     ],
     "scripts": {
         "install-all": "npm install",
-        "client": "npm run dev --workspace=client",
-        "server": "npm run dev --workspace=server",
+        "client": "npm run dev --workspace=frontend",
+        "server": "npm run dev --workspace=backend",
         "dev": "node dev.js",
-        "build": "npm run build --workspace=client",
-        "lint": "npm run lint --workspace=client",
-        "seed": "npm run seed --workspace=server"
+        "build": "npm run build --workspace=frontend",
+        "lint": "npm run lint --workspace=frontend",
+        "seed": "npm run seed --workspace=backend"
     },
     "devDependencies": {
         "concurrently": "^8.2.2"

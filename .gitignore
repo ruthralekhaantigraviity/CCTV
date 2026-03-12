@@ -27,17 +27,17 @@ npm-debug.log*
 Thumbs.db
 
 # Temporary / scratch files
-server/create_employee.js
-server/create_customer.js
-server/create_temp_admin.js
-server/dump_jobs.js
-server/dump_users.js
-server/list_users.js
-server/promote_admin.js
-server/seed.js
-server/debug_routes.js
-server/test_*.js
-server/booking_test.json
+backend/create_employee.js
+backend/create_customer.js
+backend/create_temp_admin.js
+backend/dump_jobs.js
+backend/dump_users.js
+backend/list_users.js
+backend/promote_admin.js
+backend/seed.js
+backend/debug_routes.js
+backend/test_*.js
+backend/booking_test.json
 
 # Vite temp files
-client/vite.config.js.timestamp-*
+frontend/vite.config.js.timestamp-*
