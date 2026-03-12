@@ -10,18 +10,21 @@ import axios from 'axios';
 export default function AdminDashboardHome() {
     const [jobs, setJobs] = useState([]);
     const [employees, setEmployees] = useState([]);
+    const [attendance, setAttendance] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const [jobsRes, empsRes] = await Promise.all([
+                const [jobsRes, empsRes, attRes] = await Promise.all([
                     axios.get('/api/jobs', { headers: { Authorization: `Bearer ${token}` } }),
-                    axios.get('/api/auth/employees', { headers: { Authorization: `Bearer ${token}` } })
+                    axios.get('/api/auth/employees', { headers: { Authorization: `Bearer ${token}` } }),
+                    axios.get('/api/attendance', { headers: { Authorization: `Bearer ${token}` } })
                 ]);
                 setJobs(jobsRes.data.data || []);
                 setEmployees(empsRes.data.data || []);
+                setAttendance(attRes.data.data || []);
             } catch (err) {
                 console.error('Error fetching dashboard data:', err);
             } finally {
@@ -38,8 +41,12 @@ export default function AdminDashboardHome() {
         { label: 'Completed', value: jobs.filter(j => j.status === 'completed').length.toString(), badge: 'DONE', icon: FiCheckCircle, color: 'emerald', badgeColor: 'emerald' },
     ];
 
+    const today = new Date().toISOString().split('T')[0];
+    const presentToday = attendance.filter(a => a.date === today).length;
+
     const staffStats = [
         { label: 'Total Employees', value: employees.length.toString(), badge: 'STABLE', icon: FiUsers, color: 'blue', badgeColor: 'slate' },
+        { label: 'Present Today', value: presentToday.toString(), badge: 'LIVE', icon: FiUserCheck, color: 'emerald', badgeColor: 'emerald' },
         { label: 'Technicians', value: employees.filter(e => e.role === 'employee').length.toString(), badge: 'FIELD', icon: FiPlayCircle, color: 'blue', badgeColor: 'indigo' },
     ];
 

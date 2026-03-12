@@ -82,9 +82,6 @@ export default function Navbar() {
 
                         {/* Logo */}
                         <Link to="/" className="flex items-center gap-3 group flex-shrink-0">
-                            <div className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center group- transition-colors shadow-md ">
-                                <FiCamera className="text-white text-lg" />
-                            </div>
                             <div className="hidden sm:block">
                                 <span className="font-extrabold text-base leading-tight block tracking-tight" style={{ color: 'var(--text-primary)' }}>SecureVision</span>
                                 <span className="text-blue-500 text-[9px] font-bold tracking-[0.22em] uppercase">CCTV Solutions</span>

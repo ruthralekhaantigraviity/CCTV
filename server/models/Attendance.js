@@ -10,11 +10,11 @@ const attendanceSchema = new mongoose.Schema({
         type: String, // YYYY-MM-DD
         required: true
     },
-    punchIn: {
-        type: String, // HH:mm:ss
+    clockIn: {
+        type: String, // ISO String
     },
-    punchOut: {
-        type: String, // HH:mm:ss
+    clockOut: {
+        type: String, // ISO String
     },
     status: {
         type: String,

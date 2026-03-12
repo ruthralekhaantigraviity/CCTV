@@ -4,10 +4,6 @@ import { FiCamera, FiPhone, FiMail, FiMapPin, FiFacebook, FiTwitter, FiInstagram
 const quickLinks = [
  { name: 'Home', path: '/' },
  { name: 'About Us', path: '/about' },
- { name: 'Services', path: '/services' },
- { name: 'Industries', path: '/industries' },
- { name: 'Careers', path: '/careers' },
- { name: 'Blog', path: '/blog' },
  { name: 'Contact', path: '/contact' },
 ];
 
@@ -28,9 +24,6 @@ export default function Footer() {
  {/* Brand */}
  <div>
  <Link to="/" className="flex items-center gap-3 mb-5">
- <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
- <FiCamera className="text-white text-xl" />
- </div>
  <div>
  <span className="font-bold text-lg block leading-tight" style={{ color: 'var(--text-primary)' }}>SecureVision</span>
  <span className="text-blue-400 text-xs tracking-widest uppercase">CCTV Solutions</span>
@@ -52,7 +45,7 @@ export default function Footer() {
  </div>
  </div>
 
- {/* Quick Links */}
+ {/* Quick Links Section (Pruned) */}
  <div>
  <h3 className="font-semibold text-base mb-5" style={{ color: 'var(--text-primary)' }}>Quick Links</h3>
  <ul className="space-y-2.5">

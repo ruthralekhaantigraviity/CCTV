@@ -9,7 +9,8 @@ const { admin } = require('../middleware/adminMiddleware');
 // @access  Private/Employee
 router.post('/punch', protect, async (req, res) => {
     try {
-        const { date, time, type, location } = req.body;
+        const { date, type, location } = req.body;
+        const time = new Date().toISOString();
         let attendance = await Attendance.findOne({ employee: req.user.id, date });
 
         if (!attendance) {
@@ -17,7 +18,7 @@ router.post('/punch', protect, async (req, res) => {
                 attendance = await Attendance.create({
                     employee: req.user.id,
                     date,
-                    punchIn: time,
+                    clockIn: time,
                     location
                 });
             } else {
@@ -25,14 +26,17 @@ router.post('/punch', protect, async (req, res) => {
             }
         } else {
             if (type === 'out') {
-                attendance.punchOut = time;
+                if (attendance.clockOut) {
+                    return res.status(400).json({ success: false, message: 'Already punched out for today' });
+                }
+                attendance.clockOut = time;
                 await attendance.save();
             } else {
                 return res.status(400).json({ success: false, message: 'Already punched in for today' });
             }
         }
 
-        res.json({ success: true, attendance });
+        res.json({ success: true, data: attendance });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
@@ -44,7 +48,7 @@ router.post('/punch', protect, async (req, res) => {
 router.get('/', protect, admin, async (req, res) => {
     try {
         const attendance = await Attendance.find().populate('employee', 'name email');
-        res.json({ success: true, attendance });
+        res.json({ success: true, data: attendance });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
@@ -56,7 +60,7 @@ router.get('/', protect, admin, async (req, res) => {
 router.get('/me', protect, async (req, res) => {
     try {
         const attendance = await Attendance.find({ employee: req.user.id });
-        res.json({ success: true, attendance });
+        res.json({ success: true, data: attendance });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }

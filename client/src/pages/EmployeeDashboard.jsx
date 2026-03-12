@@ -34,6 +34,7 @@ export default function EmployeeDashboard() {
         { sender: 'HQ', text: 'Team, we have a high-priority installation in Anna Nagar. Please check the Jobs board.', time: '09:12 AM', id: 1 },
         { sender: 'ME', text: "Understood. I'm finishing current maintenance and heading there.", time: '09:45 AM', id: 2 }
     ]);
+    const [notifications, setNotifications] = useState([]);
     const [newMessage, setNewMessage] = useState('');
 
     const [settings, setSettings] = useState(() => {
@@ -71,16 +72,60 @@ export default function EmployeeDashboard() {
 
     useEffect(() => {
         fetchJobs();
-        const interval = setInterval(fetchJobs, 5000);
-
-        // Auto punch-in on mount if not already punched in
-        if (!attendance.punchIn) {
-            const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            setAttendance(prev => ({ ...prev, punchIn: now }));
-        }
+        fetchNotifications();
+        syncAttendance();
+        const interval = setInterval(() => {
+            fetchJobs();
+            fetchNotifications();
+        }, 5000);
 
         return () => clearInterval(interval);
     }, []);
+
+    const syncAttendance = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const today = new Date().toISOString().split('T')[0];
+            
+            // Check if already punched in for today on server
+            const res = await fetch('/api/attendance/me', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const data = await res.json();
+            
+            if (data.success) {
+                const todayRecord = data.data.find(r => r.date === today);
+                if (todayRecord) {
+                    setAttendance({
+                        punchIn: todayRecord.clockIn ? new Date(todayRecord.clockIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null,
+                        punchOut: todayRecord.clockOut ? new Date(todayRecord.clockOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null
+                    });
+                } else {
+                    // Auto punch-in for login
+                    const punchRes = await fetch('/api/attendance/punch', {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            date: today,
+                            type: 'in'
+                        })
+                    });
+                    const punchData = await punchRes.json();
+                    if (punchData.success) {
+                        setAttendance({
+                            punchIn: new Date(punchData.data.clockIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                            punchOut: null
+                        });
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Attendance sync failed:', error);
+        }
+    };
 
     const fetchJobs = async () => {
         try {
@@ -93,6 +138,36 @@ export default function EmployeeDashboard() {
         } catch (error) {
             console.error('Error fetching jobs:', error);
             setLoading(false);
+        }
+    };
+
+    const fetchNotifications = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch('/api/notifications', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const data = await response.json();
+            if (data.success) {
+                setNotifications(data.data);
+                // Convert type 'booking' notifications to chat messages if not already present
+                const bookingMsgs = data.data
+                    .filter(n => n.type === 'booking')
+                    .map(n => ({
+                        sender: 'HQ',
+                        text: `BROADCAST: ${n.message}`,
+                        time: new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                        id: `notif-${n._id}`
+                    }));
+                
+                setMessages(prev => {
+                    const existingIds = new Set(prev.map(m => m.id));
+                    const newMsgs = bookingMsgs.filter(m => !existingIds.has(m.id));
+                    return [...prev, ...newMsgs];
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching notifications:', error);
         }
     };
 
@@ -784,7 +859,7 @@ export default function EmployeeDashboard() {
                     <p className="text-xs font-medium text-slate-400 pl-4 mb-4 mt-8">Overview</p>
                     {[
                         { id: 'dashboard', icon: FiLayout, label: 'Dashboard' },
-                        { id: 'jobs', icon: FiBriefcase, label: 'Jobs' },
+                        { id: 'jobs', icon: FiBriefcase, label: 'My Jobs' },
                         { id: 'messages', icon: FiMessageSquare, label: 'Messages' },
                         { id: 'leave', icon: FiFileText, label: 'Leave' },
                         { id: 'profile', icon: FiUser, label: 'Profile' },
@@ -843,6 +918,22 @@ export default function EmployeeDashboard() {
                         </div>
                     </div>
                 </header>
+
+                {/* Alert Bar for New Jobs */}
+                {jobs.filter(j => j.status === 'pending' && !ignoredJobs.includes(j._id)).length > 0 && (
+                    <motion.div 
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-amber-50 text-amber-800 px-6 py-3 flex items-center justify-between border-b border-amber-100 z-10"
+                    >
+                        <div className="flex items-center gap-3">
+                            <FiAlertCircle className="animate-pulse text-amber-600" size={18} />
+                            <span className="text-xs font-black uppercase tracking-widest">
+                                New Job Alert: {jobs.filter(j => j.status === 'pending' && !ignoredJobs.includes(j._id)).length} unassigned quests available!
+                            </span>
+                        </div>
+                    </motion.div>
+                )}
 
                 {/* Sub-page Content */}
                 <main className="p-6 lg:p-12 transition-all duration-300 flex-grow">

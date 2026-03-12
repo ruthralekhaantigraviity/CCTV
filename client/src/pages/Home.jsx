@@ -214,8 +214,8 @@ export default function Home() {
                                     );
                                 })}
                             </ul>
-                            <Link to="/about" className="btn-primary !rounded-none">
-                                Learn More About Us <FiArrowRight />
+                            <Link to="/about" className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold transition-colors">
+                                Learn More <FiArrowRight className="text-lg" />
                             </Link>
                         </motion.div>
                     </div>

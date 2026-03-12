@@ -202,21 +202,6 @@ export default function BookTechnician() {
                                     </div>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-xs font-black uppercase text-gray-400">Select Service Type</label>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                        {['CCTV Installation', 'Maintenance', 'Consultation', 'System Repair', 'Networking'].map((s) => (
-                                            <button
-                                                key={s}
-                                                type="button"
-                                                onClick={() => setForm({ ...form, serviceType: s })}
-                                                className={`py-3 px-4 rounded-none text-xs font-bold transition-all border ${form.serviceType === s ? 'bg-gray-50 border-gray-400 text-gray-900 shadow-sm' : 'bg-white border-gray-100 text-gray-500 hover:bg-gray-50'}`}
-                                            >
-                                                {s}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
 
                                 <div className="pt-6">
                                     <button

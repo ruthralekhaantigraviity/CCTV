@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
     FiStar, FiCheckCircle, FiShield, FiTruck, FiLock,
-    FiMapPin, FiShare2, FiHeart, FiArrowLeft, FiShoppingBag, FiVideo
+    FiMapPin, FiShare2, FiHeart, FiArrowLeft, FiShoppingBag, FiVideo, FiX
 } from 'react-icons/fi';
 import { products } from '../data/products';
 import CTABanner from '../components/CTABanner';
@@ -12,6 +12,7 @@ export default function ProductDetail() {
     const { slug } = useParams();
     const [qty, setQty] = useState(1);
     const [activeImg, setActiveImg] = useState(0);
+    const [isVideoSelected, setIsVideoSelected] = useState(false);
 
     const product = products.find((p) => p.slug === slug);
 
@@ -49,24 +50,54 @@ export default function ProductDetail() {
                             {[product.img, product.img, product.img].map((img, i) => (
                                 <button
                                     key={i}
-                                    onClick={() => setActiveImg(i)}
-                                    className={`w-20 h-20 border-2 p-2 bg-gray-50 transition-all ${activeImg === i ? 'border-blue-600' : 'border-gray-100 '}`}
+                                    onClick={() => { setActiveImg(i); setIsVideoSelected(false); }}
+                                    className={`w-20 h-20 border-2 p-2 bg-gray-50 transition-all ${(!isVideoSelected && activeImg === i) ? 'border-blue-600' : 'border-gray-100'}`}
                                 >
                                     <img src={img} className="w-full h-full object-contain mix-blend-multiply" alt="thumb" />
                                 </button>
                             ))}
+                            {/* Video Thumbnail */}
+                            <button
+                                onClick={() => setIsVideoSelected(true)}
+                                className={`w-20 h-20 border-2 p-2 bg-gray-900 transition-all relative overflow-hidden group ${isVideoSelected ? 'border-blue-600' : 'border-gray-800'}`}
+                            >
+                                <img src={product.img} className="w-full h-full object-cover opacity-30 grayscale" alt="video-thumb" />
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <div className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30">
+                                        <div className="w-0 h-0 border-t-[5px] border-t-transparent border-l-[8px] border-l-white border-b-[5px] border-b-transparent ml-0.5" />
+                                    </div>
+                                </div>
+                                <div className="absolute bottom-1 right-1 bg-blue-600 text-[8px] font-bold text-white px-1 rounded-sm uppercase tracking-tighter">VIDEO</div>
+                            </button>
                         </div>
 
                         {/* Main Visual */}
                         <div className="flex-grow aspect-square bg-gray-50 flex items-center justify-center p-12 border border-gray-100 relative group overflow-hidden">
-                            <motion.img
-                                key={activeImg}
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                src={product.img}
-                                className="w-full h-full object-contain mix-blend-multiply transition-transform duration-700 group-"
-                                alt={product.name}
-                            />
+                            {!isVideoSelected ? (
+                                <motion.img
+                                    key={activeImg}
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    src={product.img}
+                                    className="w-full h-full object-contain mix-blend-multiply transition-transform duration-700 group-"
+                                    alt={product.name}
+                                />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center bg-black rounded-lg overflow-hidden shadow-2xl relative">
+                                    <video
+                                        src="https://www.w3schools.com/html/mov_bbb.mp4"
+                                        controls
+                                        autoPlay
+                                        className="w-full h-full object-cover"
+                                    />
+                                    <button
+                                        onClick={() => setIsVideoSelected(false)}
+                                        className="absolute top-4 right-4 p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/40 transition-all border border-white/30 z-10 shadow-xl"
+                                    >
+                                        <FiX size={18} />
+                                    </button>
+                                </div>
+                            )}
                             <div className="absolute top-6 right-6 flex flex-col gap-3">
                                 <button className="p-3 bg-white rounded-full shadow-lg text-gray-400 transition-all">
                                     <FiHeart />
@@ -74,6 +105,23 @@ export default function ProductDetail() {
                                 <button className="p-3 bg-white rounded-full shadow-lg text-gray-400 transition-all">
                                     <FiShare2 />
                                 </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4 pt-10">
+                        <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                            <FiTruck className="text-blue-600 text-xl" />
+                            <div className="text-xs">
+                                <p className="font-bold">Fast Delivery</p>
+                                <p className="text-gray-500">Scheduled within 24-48 hrs</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                            <FiShield className="text-blue-600 text-xl" />
+                            <div className="text-xs">
+                                <p className="font-bold">Official Warranty</p>
+                                <p className="text-gray-500">2 Years Manufacturer Warranty</p>
                             </div>
                         </div>
                     </div>
@@ -110,6 +158,29 @@ export default function ProductDetail() {
                         </div>
                     </div>
 
+                    {/* Key Specifications - Relocated to Right Column */}
+                    <div className="space-y-4 pt-4">
+                        <h3 className="text-lg font-bold text-gray-900 border-b pb-2 flex items-center gap-2">
+                             Key Specifications
+                        </h3>
+                        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6">
+                            {product.features.map((f, i) => (
+                                <li key={i} className="flex items-center gap-3 text-sm text-gray-600">
+                                    <FiCheckCircle className="text-green-500 flex-shrink-0" />
+                                    <span className="font-medium">{f}</span>
+                                </li>
+                            ))}
+                            <li className="flex items-center gap-3 text-sm text-gray-600">
+                                <FiCheckCircle className="text-green-500 flex-shrink-0" />
+                                <span className="font-medium">Mobile App Integration</span>
+                            </li>
+                            <li className="flex items-center gap-3 text-sm text-gray-600">
+                                <FiCheckCircle className="text-green-500 flex-shrink-0" />
+                                <span className="font-medium">Cloud Recording</span>
+                            </li>
+                        </ul>
+                    </div>
+
                     <div className="space-y-6">
                         <div className="flex flex-wrap items-center gap-3">
                             <Link
@@ -131,65 +202,6 @@ export default function ProductDetail() {
                                 <FiShoppingBag size={18} />
                             </button>
                         </div>
-
-                        {/* Video Section Placeholder */}
-                        <div className="pt-4">
-                            <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
-                                <FiVideo className="text-blue-600" /> Product Video Overview
-                            </h3>
-                            <div className="aspect-video bg-gray-900 rounded-xl overflow-hidden relative group cursor-pointer border border-gray-100 shadow-inner">
-                                <img
-                                    src={product.img}
-                                    className="w-full h-full object-cover opacity-40 blur-[2px] group-hover:blur-0 transition-all duration-500"
-                                    alt="video placeholder"
-                                />
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30 group- transition-transform">
-                                        <div className="w-0 h-0 border-t-[10px] border-t-transparent border-l-[18px] border-l-white border-b-[10px] border-b-transparent ml-1" />
-                                    </div>
-                                </div>
-                                <div className="absolute bottom-4 left-4 text-white text-[10px] font-bold tracking-widest bg-black/50 px-3 py-1 rounded">
-                                    4K PRODUCT REVEAL
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4">
-                            <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
-                                <FiTruck className="text-blue-600 text-xl" />
-                                <div className="text-xs">
-                                    <p className="font-bold">Fast Delivery</p>
-                                    <p className="text-gray-500">Scheduled within 24-48 hrs</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
-                                <FiShield className="text-blue-600 text-xl" />
-                                <div className="text-xs">
-                                    <p className="font-bold">Official Warranty</p>
-                                    <p className="text-gray-500">2 Years Manufacturer Warranty</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="space-y-4">
-                        <h3 className="text-lg font-bold text-gray-900 border-b pb-2">Key Specifications</h3>
-                        <ul className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-8">
-                            {product.features.map((f, i) => (
-                                <li key={i} className="flex items-center gap-3 text-sm text-gray-600">
-                                    <FiCheckCircle className="text-green-500 flex-shrink-0" />
-                                    <span>{f}</span>
-                                </li>
-                            ))}
-                            <li className="flex items-center gap-3 text-sm text-gray-600">
-                                <FiCheckCircle className="text-green-500 flex-shrink-0" />
-                                <span>Mobile App Integration</span>
-                            </li>
-                            <li className="flex items-center gap-3 text-sm text-gray-600">
-                                <FiCheckCircle className="text-green-500 flex-shrink-0" />
-                                <span>Cloud & Local Recording</span>
-                            </li>
-                        </ul>
                     </div>
                 </div>
             </div>

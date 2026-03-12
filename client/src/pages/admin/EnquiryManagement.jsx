@@ -16,7 +16,10 @@ export default function EnquiryManagement() {
     const fetchEnquiries = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(API_URL);
+            const token = localStorage.getItem('token');
+            const res = await axios.get(API_URL, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             if (res.data.success) setEnquiries(res.data.data);
         } catch (err) {
             console.error('Failed to fetch enquiries');
@@ -27,7 +30,10 @@ export default function EnquiryManagement() {
 
     const handleUpdateStatus = async (id, newStatus) => {
         try {
-            const res = await axios.patch(`${API_URL}/${id}`, { status: newStatus });
+            const token = localStorage.getItem('token');
+            const res = await axios.patch(`${API_URL}/${id}`, { status: newStatus }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             if (res.data.success)
                 setEnquiries(enquiries.map(enq => enq._id === id ? res.data.data : enq));
         } catch (err) {
@@ -38,7 +44,10 @@ export default function EnquiryManagement() {
     const handleDelete = async (id) => {
         if (!window.confirm('Delete this enquiry?')) return;
         try {
-            const res = await axios.delete(`${API_URL}/${id}`);
+            const token = localStorage.getItem('token');
+            const res = await axios.delete(`${API_URL}/${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             if (res.data.success) setEnquiries(enquiries.filter(enq => enq._id !== id));
         } catch (err) {
             console.error('Failed to delete enquiry');
@@ -115,7 +124,8 @@ export default function EnquiryManagement() {
                                     className=" transition-colors group"
                                 >
                                     <td className="px-6 py-5">
-                                        <span className="text-sm font-bold text-slate-600">{enq.phone}</span>
+                                        <p className="font-black text-slate-800 text-sm leading-tight">{enq.name}</p>
+                                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">{enq.phone}</p>
                                     </td>
                                     <td className="px-6 py-5">
                                         <span className="text-sm font-bold text-slate-900">{enq.email}</span>

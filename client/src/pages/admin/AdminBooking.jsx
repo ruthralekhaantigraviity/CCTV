@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FiSearch, FiMapPin, FiCamera, FiCalendar, FiCheckCircle, FiClock, FiAlertCircle } from 'react-icons/fi';
+import { FiSearch, FiMapPin, FiCamera, FiCalendar, FiCheckCircle, FiClock, FiAlertCircle, FiPhone } from 'react-icons/fi';
 import axios from 'axios';
 
 const statusConfig = {
@@ -16,7 +16,7 @@ export default function AdminBooking() {
     const [employees, setEmployees] = useState([]);
     const [loading, setLoading] = useState(true);
     const [assigning, setAssigning] = useState(null);
-    const [selectedEmployee, setSelectedEmployee] = useState('');
+    const [selectedEmployees, setSelectedEmployees] = useState({});
     const [search, setSearch] = useState('');
     const [filterStatus, setFilterStatus] = useState('all');
 
@@ -40,17 +40,22 @@ export default function AdminBooking() {
     }, []);
 
     const handleAssign = async (jobId) => {
-        if (!selectedEmployee) return;
+        const empId = selectedEmployees[jobId];
+        if (!empId) return;
         setAssigning(jobId);
         try {
             const token = localStorage.getItem('token');
             await axios.patch(`/api/jobs/${jobId}/assign`,
-                { employeeId: selectedEmployee },
+                { employeeId: empId },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             const jobsRes = await axios.get('/api/jobs', { headers: { Authorization: `Bearer ${token}` } });
             setJobs(jobsRes.data.data);
-            setSelectedEmployee('');
+            setSelectedEmployees(prev => {
+                const next = { ...prev };
+                delete next[jobId];
+                return next;
+            });
         } catch (err) {
             console.error('Error assigning technician:', err);
         } finally {
@@ -127,6 +132,7 @@ export default function AdminBooking() {
                 </select>
             </div>
 
+
             {/* Table */}
             <div className="bg-white border border-gray-100 overflow-hidden">
                 <div className="overflow-x-auto">
@@ -198,8 +204,8 @@ export default function AdminBooking() {
                                                 {job.status === 'pending' || job.status === 'claimed' ? (
                                                     <>
                                                         <select
-                                                            onChange={e => setSelectedEmployee(e.target.value)}
-                                                            value={selectedEmployee || (job.status === 'claimed' ? job.assignedEmployee?._id : '')}
+                                                            onChange={e => setSelectedEmployees(prev => ({ ...prev, [job._id]: e.target.value }))}
+                                                            value={selectedEmployees[job._id] || (job.status === 'claimed' ? job.assignedEmployee?._id : '')}
                                                             className="text-[10px] font-bold bg-gray-50 border border-gray-200 px-2 py-1.5 text-slate-600 focus:outline-none"
                                                         >
                                                             <option value="">{job.status === 'claimed' ? 'Confirm Claimant' : 'Assign...'}</option>
@@ -207,9 +213,9 @@ export default function AdminBooking() {
                                                         </select>
                                                         <button
                                                             onClick={() => {
-                                                                const empId = selectedEmployee || (job.status === 'claimed' ? job.assignedEmployee?._id : null);
+                                                                const empId = selectedEmployees[job._id] || (job.status === 'claimed' ? job.assignedEmployee?._id : null);
                                                                 if (empId) {
-                                                                    setSelectedEmployee(empId);
+                                                                    setSelectedEmployees(prev => ({ ...prev, [job._id]: empId }));
                                                                     handleAssign(job._id);
                                                                 }
                                                             }}

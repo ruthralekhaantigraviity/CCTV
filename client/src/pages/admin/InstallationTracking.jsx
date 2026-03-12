@@ -31,6 +31,7 @@ export default function InstallationTracking() {
     }, []);
 
     const filtered = jobs.filter(job => {
+        if (job.status === 'pending') return false;
         const matchSearch = job.customerName?.toLowerCase().includes(search.toLowerCase()) ||
             job.serviceType?.toLowerCase().includes(search.toLowerCase()) ||
             job.assignedEmployee?.name?.toLowerCase().includes(search.toLowerCase());

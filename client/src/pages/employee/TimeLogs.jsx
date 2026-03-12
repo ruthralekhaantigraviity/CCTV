@@ -20,18 +20,20 @@ export default function TimeLogs() {
  headers: { Authorization:`Bearer ${token}` }
  });
  if (res.data.success) {
- setLogs(res.data.attendance);
+ setLogs(res.data.data);
  }
  } catch (err) {
  console.error('Failed to fetch logs');
  // Mock for demo
  setLogs([
- { _id: '1', date: '2026-03-08', punchIn: '09:00:00', punchOut: '18:15:00', status: 'Present' },
- { _id: '2', date: '2026-03-07', punchIn: '09:05:00', punchOut: '17:45:00', status: 'Present' },
- { _id: '3', date: '2026-03-06', punchIn: '--:--:--', punchOut: '--:--:--', status: 'Absent' },
+ { _id: '1', date: '2026-03-08', clockIn: new Date('2026-03-08T09:00:00Z').toISOString(), clockOut: new Date('2026-03-08T18:15:00Z').toISOString(), status: 'Present' },
+ { _id: '2', date: '2026-03-07', clockIn: new Date('2026-03-07T09:05:00Z').toISOString(), clockOut: new Date('2026-03-07T17:45:00Z').toISOString(), status: 'Present' },
+ { _id: '3', date: '2026-03-06', clockIn: null, clockOut: null, status: 'Absent' },
  ]);
  }
  };
+
+  const formatTime = (t) => t ? new Date(t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--';
 
  return (
  <div className="space-y-8">

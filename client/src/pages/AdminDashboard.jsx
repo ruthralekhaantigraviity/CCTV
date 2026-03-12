@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -19,9 +20,22 @@ import EnquiryManagement from './admin/EnquiryManagement';
 import AdminSettings from './admin/AdminSettings';
 
 export default function AdminDashboard() {
-    const { logout } = useAuth();
+    const { logout, user, loading: authLoading } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
+
+    useEffect(() => {
+        if (!authLoading && (!user || user.role !== 'admin')) {
+            logout();
+            navigate('/admin/login');
+        }
+    }, [user, authLoading, navigate, logout]);
+
+    if (authLoading) return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+            <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+        </div>
+    );
 
     const menuItems = [
         { id: 'dashboard', label: 'Dashboard', icon: FiGrid, path: '/admin-dashboard' },

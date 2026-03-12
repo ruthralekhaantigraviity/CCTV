@@ -16,18 +16,29 @@ const generateToken = (id) => {
 // @access  Public
 router.post('/register', async (req, res) => {
     try {
-        const { name, email, phone, password } = req.body;
+        const { name, email, phone, password, role, adminSecret } = req.body;
 
         const userExists = await User.findOne({ email });
         if (userExists) {
             return res.status(400).json({ success: false, message: 'User already exists' });
         }
 
+        // Handle Admin Registration
+        let finalRole = 'user';
+        if (role === 'admin') {
+            const masterSecret = process.env.ADMIN_SECRET || 'SV_ADMIN_2026';
+            if (adminSecret !== masterSecret) {
+                return res.status(401).json({ success: false, message: 'Invalid Admin Authorization Secret' });
+            }
+            finalRole = 'admin';
+        }
+
         const user = await User.create({
             name,
             email,
             phone,
-            password
+            password,
+            role: finalRole
         });
 
         if (user) {
@@ -39,6 +50,7 @@ router.post('/register', async (req, res) => {
                     name: user.name,
                     email: user.email,
                     phone: user.phone,
+                    role: user.role,
                     avatar: user.avatar
                 }
             });
@@ -65,6 +77,7 @@ router.post('/login', async (req, res) => {
                     name: user.name,
                     email: user.email,
                     phone: user.phone,
+                    role: user.role,
                     avatar: user.avatar
                 }
             });
@@ -90,6 +103,7 @@ router.get('/profile', protect, async (req, res) => {
                     name: user.name,
                     email: user.email,
                     phone: user.phone,
+                    role: user.role,
                     avatar: user.avatar
                 }
             });
@@ -108,6 +122,41 @@ router.get('/employees', protect, admin, async (req, res) => {
     try {
         const employees = await User.find({ role: 'employee' }).select('-password');
         res.json({ success: true, data: employees });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// @desc    Register employee (Admin only)
+// @route   POST /api/auth/employees
+// @access  Private/Admin
+router.post('/employees', protect, admin, async (req, res) => {
+    try {
+        const { name, email, phone, password, role = 'employee' } = req.body;
+
+        const userExists = await User.findOne({ email });
+        if (userExists) {
+            return res.status(400).json({ success: false, message: 'User already exists' });
+        }
+
+        const user = await User.create({
+            name,
+            email,
+            phone,
+            password,
+            role
+        });
+
+        res.status(201).json({
+            success: true,
+            data: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                role: user.role
+            }
+        });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
