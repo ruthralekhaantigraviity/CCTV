@@ -41,12 +41,25 @@ export const AuthProvider = ({ children }) => {
     };
 
     const login = async (userData) => {
-        const res = await axios.post(`${API_URL}/login`, userData);
-        if (res.data.success) {
-            localStorage.setItem('token', res.data.token);
-            setUser(res.data.user);
+        try {
+            console.log('Attempting login to:', `${API_URL}/login`);
+            const res = await axios.post(`${API_URL}/login`, userData, {
+                timeout: 15000 // 15s timeout
+            });
+            
+            if (res.data.success) {
+                localStorage.setItem('token', res.data.token);
+                setUser(res.data.user);
+            }
+            return res.data;
+        } catch (err) {
+            console.error('Login Error details:', {
+                status: err.response?.status,
+                data: err.response?.data,
+                message: err.message
+            });
+            throw err;
         }
-        return res.data;
     };
 
     const logout = () => {

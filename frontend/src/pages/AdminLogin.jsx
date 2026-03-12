@@ -44,10 +44,12 @@ export default function AdminLogin() {
  }
  }
  } catch (err) {
- setError(err.response?.data?.message || 'Authentication failed');
- } finally {
- setLoading(false);
- }
+      console.error('Submission error:', err);
+      const message = err.response?.data?.message || err.message || 'Authentication failed';
+      setError(`Critical Error: ${message}. If this persists, please check your internet or if the server is awake.`);
+    } finally {
+      setLoading(false);
+    }
  };
 
  return (
