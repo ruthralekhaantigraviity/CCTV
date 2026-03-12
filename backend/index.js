@@ -26,6 +26,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
+app.get('/', (req, res) => {
+    res.send('SecureVision Backend is ONLINE 🚀 (Check /api/health for status)');
+});
+
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/contact', require('./routes/contact'));
 app.use('/api/testimonials', require('./routes/testimonials'));
