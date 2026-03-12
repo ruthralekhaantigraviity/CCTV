@@ -84,15 +84,22 @@ export default function AdminLogin() {
  <div className="bg-white/70 backdrop-blur-xl p-10 rounded-none border border-slate-200 shadow-2xl shadow-slate-200/50 relative overflow-hidden group">
  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-50" />
 
- {error && (
- <motion.div
- initial={{ opacity: 0, x: -10 }}
- animate={{ opacity: 1, x: 0 }}
- className="mb-8 p-5 bg-red-50 border border-red-100 text-red-600 text-[10px] font-bold rounded-none flex items-center gap-4 uppercase tracking-widest leading-relaxed"
- >
- <FiShield className="text-lg flex-shrink-0" /> {error}
- </motion.div>
- )}
+  {error && (
+    <motion.div
+      initial={{ opacity: 0, x: -10 }}
+      animate={{ opacity: 1, x: 0 }}
+      className="mb-8 p-5 bg-red-50 border border-red-100 text-red-600 text-[10px] font-bold rounded-none flex flex-col gap-2 uppercase tracking-widest leading-relaxed"
+    >
+      <div className="flex items-center gap-4">
+        <FiShield className="text-lg flex-shrink-0" /> {error}
+      </div>
+      {error.includes('NETWORK ERROR') && (
+        <div className="mt-2 p-2 bg-white/50 border border-red-200 lowercase font-mono opacity-80 break-all">
+          Target API: {import.meta.env.VITE_API_URL || '(NOT SET - using local proxy)'}/api/auth/login
+        </div>
+      )}
+    </motion.div>
+  )}
 
  <form onSubmit={handleSubmit} className="space-y-8">
  <div className="space-y-3">
