@@ -159,11 +159,11 @@ export default function AdminBooking() {
                                         className=" transition-colors group"
                                     >
                                         <td className="px-6 py-5">
-                                            <p className="text-[11px] font-black text-blue-600">#SV-{job._id.slice(-6).toUpperCase()}</p>
+                                            <p className="text-[11px] font-black text-blue-600">#SV-{(job._id || '').slice(-6).toUpperCase() || 'ID'}</p>
                                         </td>
                                         <td className="px-6 py-5">
-                                            <p className="font-black text-slate-800 text-sm">{job.customerName}</p>
-                                            <p className="text-[10px] text-slate-400 mt-0.5">{new Date(job.createdAt).toLocaleDateString()}</p>
+                                            <p className="font-black text-slate-800 text-sm">{job.customerName || 'Anonymous'}</p>
+                                            <p className="text-[10px] text-slate-400 mt-0.5">{job.createdAt ? new Date(job.createdAt).toLocaleDateString() : 'N/A'}</p>
                                         </td>
                                         <td className="px-6 py-5">
                                             <p className="text-sm font-semibold text-slate-600">{job.customerPhone || 'N/A'}</p>

@@ -62,13 +62,13 @@ export default function AdminDashboardHome() {
     };
 
     const recentBookings = jobs.slice(0, 5).map(job => ({
-        id: job._id,
-        name: job.customerName,
-        service: job.serviceType,
-        office: job.customerAddress.split(',')[0],
-        date: new Date(job.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-        status: job.status,
-        displayStatus: getStatusLabel(job.status)
+        id: job._id || 'N/A',
+        name: job.customerName || 'Anonymous',
+        service: job.serviceType || 'Service',
+        office: job.customerAddress ? job.customerAddress.split(',')[0] : 'Remote',
+        date: job.createdAt ? new Date(job.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Recently',
+        status: job.status || 'pending',
+        displayStatus: getStatusLabel(job.status || 'pending')
     }));
 
     const StatCard = ({ stat, index }) => (
