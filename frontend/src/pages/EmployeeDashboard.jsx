@@ -848,7 +848,7 @@ export default function EmployeeDashboard() {
 
             {/* Sidebar (Matched to Customer Dashboard) */}
             <aside className="w-24 lg:w-72 bg-white border-r border-gray-100 flex flex-col transition-all duration-300 z-20">
-                <div className="p-8 mb-4">
+                <div className="p-4 mb-2">
                     <div className="flex flex-col">
                         <span className="font-semibold text-[18px] text-[#0f172a] orbitron">SecureVision</span>
                         <span className="text-xs font-semibold text-blue-600">Cctv Solutions</span>
@@ -856,7 +856,7 @@ export default function EmployeeDashboard() {
                 </div>
 
                 <nav className="flex-grow px-4 space-y-1">
-                    <p className="text-xs font-medium text-slate-400 pl-4 mb-4 mt-8">Overview</p>
+                    <p className="text-[10px] uppercase tracking-widest font-bold text-slate-400 pl-4 mb-2 mt-4">Overview</p>
                     {[
                         { id: 'dashboard', icon: FiLayout, label: 'Dashboard' },
                         { id: 'jobs', icon: FiBriefcase, label: 'My Jobs' },
@@ -871,7 +871,7 @@ export default function EmployeeDashboard() {
                             className={`w-full flex items-center gap-4 px-4 py-3 rounded-none transition-all group ${activeTab === item.id ? 'bg-blue-50 text-blue-600' : 'text-slate-500 '}`}
                         >
                             <item.icon size={22} className={activeTab === item.id ? 'text-[#2563eb]' : 'text-[#94a3b8] group-hover:text-[#0f172a]'} />
-                            <span className="hidden lg:block font-semibold text-lg">{item.label}</span>
+                            <span className="hidden lg:block font-semibold text-[14px]">{item.label}</span>
                         </button>
                     ))}
                 </nav>
