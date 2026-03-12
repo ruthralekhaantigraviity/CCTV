@@ -5,8 +5,7 @@ const connectDB = require('./config/db');
 
 const app = express();
 
-// Connect to MongoDB
-connectDB();
+// Connection placeholder (moved to startServer)
 
 // Middleware
 app.use((req, res, next) => {
@@ -61,10 +60,22 @@ app.use((err, req, res, next) => {
     res.status(500).json({ success: false, message: 'Internal server error' });
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`🚀 SecureVision API server running on port ${PORT}`);
-    console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`);
-});
+const startServer = async () => {
+    try {
+        // Connect to MongoDB
+        await connectDB();
+
+        const PORT = process.env.PORT || 5000;
+        app.listen(PORT, () => {
+            console.log(`🚀 SecureVision API server running on port ${PORT}`);
+            console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`);
+        });
+    } catch (err) {
+        console.error('❌ Failed to start server:', err.message);
+        process.exit(1);
+    }
+};
+
+startServer();
 
 module.exports = app;
