@@ -223,71 +223,71 @@
 }
 
 /* ─── Products page always stays LIGHT ──────────────────────── */
-[data-theme="dark"] .products-page,
-[data-theme="dark"] .products-page .bg-white {
+[data-theme="dark"] .products-page, [data-theme="dark"] .admin-theme,
+[data-theme="dark"] .products-page, [data-theme="dark"] .admin-theme .bg-white {
   background-color: white !important;
   color: #111827 !important;
 }
 
-[data-theme="dark"] .products-page .bg-gray-50 {
+[data-theme="dark"] .products-page, [data-theme="dark"] .admin-theme .bg-gray-50 {
   background-color: #f9fafb !important;
 }
 
-[data-theme="dark"] .products-page .bg-gray-100 {
+[data-theme="dark"] .products-page, [data-theme="dark"] .admin-theme .bg-gray-100 {
   background-color: #f3f4f6 !important;
 }
 
-[data-theme="dark"] .products-page .bg-gray-200 {
+[data-theme="dark"] .products-page, [data-theme="dark"] .admin-theme .bg-gray-200 {
   background-color: #e5e7eb !important;
 }
 
-[data-theme="dark"] .products-page .text-gray-900 {
+[data-theme="dark"] .products-page, [data-theme="dark"] .admin-theme .text-gray-900 {
   color: #111827 !important;
 }
 
-[data-theme="dark"] .products-page .text-gray-800 {
+[data-theme="dark"] .products-page, [data-theme="dark"] .admin-theme .text-gray-800 {
   color: #1f2937 !important;
 }
 
-[data-theme="dark"] .products-page .text-gray-700 {
+[data-theme="dark"] .products-page, [data-theme="dark"] .admin-theme .text-gray-700 {
   color: #374151 !important;
 }
 
-[data-theme="dark"] .products-page .text-gray-600 {
+[data-theme="dark"] .products-page, [data-theme="dark"] .admin-theme .text-gray-600 {
   color: #4b5563 !important;
 }
 
-[data-theme="dark"] .products-page .text-gray-500 {
+[data-theme="dark"] .products-page, [data-theme="dark"] .admin-theme .text-gray-500 {
   color: #6b7280 !important;
 }
 
-[data-theme="dark"] .products-page .text-black {
+[data-theme="dark"] .products-page, [data-theme="dark"] .admin-theme .text-black {
   color: #000000 !important;
 }
 
-[data-theme="dark"] .products-page .border-gray-100 {
+[data-theme="dark"] .products-page, [data-theme="dark"] .admin-theme .border-gray-100 {
   border-color: #f3f4f6 !important;
 }
 
-[data-theme="dark"] .products-page .border-gray-200 {
+[data-theme="dark"] .products-page, [data-theme="dark"] .admin-theme .border-gray-200 {
   border-color: #e5e7eb !important;
 }
 
-[data-theme="dark"] .products-page .border-gray-300 {
+[data-theme="dark"] .products-page, [data-theme="dark"] .admin-theme .border-gray-300 {
   border-color: #d1d5db !important;
 }
 
-[data-theme="dark"] .products-page input,
-[data-theme="dark"] .products-page select {
+[data-theme="dark"] .products-page, [data-theme="dark"] .admin-theme input,
+[data-theme="dark"] .products-page, [data-theme="dark"] .admin-theme select {
   background-color: #f3f4f6 !important;
   color: #111827 !important;
   border-color: #e5e7eb !important;
 }
 
-[data-theme="dark"] .products-page .shadow-md,
-[data-theme="dark"] .products-page .shadow-lg,
-[data-theme="dark"] .products-page .shadow-xl,
-[data-theme="dark"] .products-page .shadow-sm {
+[data-theme="dark"] .products-page, [data-theme="dark"] .admin-theme .shadow-md,
+[data-theme="dark"] .products-page, [data-theme="dark"] .admin-theme .shadow-lg,
+[data-theme="dark"] .products-page, [data-theme="dark"] .admin-theme .shadow-xl,
+[data-theme="dark"] .products-page, [data-theme="dark"] .admin-theme .shadow-sm {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
 }
 
