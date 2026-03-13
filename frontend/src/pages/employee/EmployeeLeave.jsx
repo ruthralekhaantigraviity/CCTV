@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiCalendar, FiClock, FiCheckCircle, FiXCircle, FiPlusCircle, FiX } from 'react-icons/fi';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const API = '/api/leave';
 
@@ -14,6 +15,9 @@ const statusConfig = {
 };
 
 export default function EmployeeLeave() {
+    useEffect(() => {
+        window.alert('DEBUG 2559: EmployeeLeave.jsx is definitely running NEW code.');
+    }, []);
     const [leaves, setLeaves] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
@@ -49,23 +53,47 @@ export default function EmployeeLeave() {
 
     const handleSubmit = async () => {
         if (!form.startDate || !form.endDate || !form.reason.trim()) {
-            alert('Please fill all fields.');
+            toast.error('Please fill all fields.', {
+                style: { borderRadius: '0px', background: '#333', color: '#fff' }
+            });
             return;
         }
+        if (!window.confirm('DEBUG: Proceed with leave submission?')) return;
         setSubmitting(true);
         try {
             const token = localStorage.getItem('token');
+            // Log for debugging
+            console.log('API Endpoint:', axios.defaults.baseURL + API);
+            console.log('Payload:', { ...form, days: calcDays(form.startDate, form.endDate) });
+            
+            if (!token) {
+                toast.error('Session expired. Please log in again.', {
+                    style: { borderRadius: '0px', background: '#333', color: '#fff' }
+                });
+                setSubmitting(false);
+                return;
+            }
             const days = calcDays(form.startDate, form.endDate);
-            await axios.post(API, { ...form, days }, {
+            const res = await axios.post(API, { ...form, days }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setForm({ leaveType: 'Sick Leave', startDate: '', endDate: '', reason: '' });
-            setShowForm(false);
-            fetchMyLeaves();
-            alert('Leave request submitted successfully! The admin will review it shortly.');
+            
+            if (res.data.success) {
+                setForm({ leaveType: 'Sick Leave', startDate: '', endDate: '', reason: '' });
+                setShowForm(false);
+                fetchMyLeaves();
+                toast.success('Leave request submitted successfully!', {
+                    style: { borderRadius: '0px', background: '#0f172a', color: '#fff' }
+                });
+            } else {
+                throw new Error(res.data.message || 'Submission failed');
+            }
         } catch (err) {
-            console.error('Failed to submit leave request');
-            alert('Failed to submit. Please try again.');
+            console.error('Failed to submit leave request:', err);
+            const errMsg = err.response?.data?.message || err.message || 'Unknown error';
+            toast.error(`Submission Failed: ${errMsg}`, {
+                style: { borderRadius: '0px', background: '#333', color: '#fff' }
+            });
         } finally {
             setSubmitting(false);
         }
@@ -190,7 +218,8 @@ export default function EmployeeLeave() {
                                     <textarea value={form.reason} onChange={e => setForm({ ...form, reason: e.target.value })}
                                         placeholder="Briefly describe the reason..."
                                         rows={4}
-                                        className="w-full px-4 py-3 border border-gray-100 bg-gray-50 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-100 resize-none"
+                                        style={{ color: '#000000 !important', backgroundColor: '#fff9c4' }}
+                                        className="w-full px-4 py-3 border-2 border-slate-900 bg-[#fff9c4] text-black text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 resize-none font-black"
                                     />
                                 </div>
                             </div>

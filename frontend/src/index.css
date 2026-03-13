@@ -230,6 +230,13 @@
   color: #111827 !important;
 }
 
+/* Force TRUE BLACK text and darker borders for form elements in these sections */
+.products-page input, .products-page textarea, .products-page select,
+.admin-theme input, .admin-theme textarea, .admin-theme select {
+  color: #000000 !important;
+  border-color: #d1d5db !important;
+}
+
 [data-theme="dark"] .products-page, [data-theme="dark"] .admin-theme .bg-gray-50 {
   background-color: #f9fafb !important;
 }
@@ -279,6 +286,7 @@
 }
 
 [data-theme="dark"] .products-page, [data-theme="dark"] .admin-theme input,
+[data-theme="dark"] .products-page, [data-theme="dark"] .admin-theme textarea,
 [data-theme="dark"] .products-page, [data-theme="dark"] .admin-theme select {
   background-color: #f3f4f6 !important;
   color: #111827 !important;
