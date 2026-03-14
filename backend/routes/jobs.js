@@ -3,6 +3,8 @@ const router = express.Router();
 const Job = require('../models/Job');
 const User = require('../models/User');
 const Notification = require('../models/Notification');
+const { protect } = require('../middleware/authMiddleware');
+const { admin } = require('../middleware/adminMiddleware');
 
 // Create a new job request
 router.post('/', async (req, res) => {
@@ -63,8 +65,8 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Assign a job to a technician
-router.patch('/:id/assign', async (req, res) => {
+// Assign a job to a technician (Admin only)
+router.patch('/:id/assign', protect, admin, async (req, res) => {
     try {
         const { employeeId } = req.body;
         const job = await Job.findById(req.params.id);
@@ -92,7 +94,7 @@ router.patch('/:id/assign', async (req, res) => {
 });
 
 // Accept a job (Employee self-accept)
-router.patch('/:id/accept', async (req, res) => {
+router.patch('/:id/accept', protect, async (req, res) => {
     try {
         const { employeeId } = req.body;
         const job = await Job.findById(req.params.id);
@@ -104,7 +106,7 @@ router.patch('/:id/accept', async (req, res) => {
         }
 
         job.assignedEmployee = employeeId;
-        job.status = 'claimed';
+        job.status = 'assigned';
         job.acceptedAt = new Date();
         await job.save();
 
@@ -132,7 +134,7 @@ router.patch('/:id/accept', async (req, res) => {
 });
 
 // Update job status
-router.patch('/:id/status', async (req, res) => {
+router.patch('/:id/status', protect, async (req, res) => {
     try {
         const { status, completionImage } = req.body;
         const job = await Job.findById(req.params.id);

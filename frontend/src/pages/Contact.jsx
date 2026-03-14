@@ -53,9 +53,9 @@ export default function Contact() {
  {/* Hero */}
  <section className="pt-36 pb-16 relative overflow-hidden" style={{ background: 'var(--hero-gradient)' }}>
  <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
- <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
- <p className="text-blue-500 font-semibold uppercase tracking-widest text-sm mb-3">Get In Touch</p>
- <h1 className="text-5xl font-extrabold mb-5" style={{ color: 'var(--text-primary)' }}>Contact SecureVision</h1>
+  <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+  <p className="text-blue-500 font-semibold uppercase tracking-widest text-sm mb-3">Get In Touch</p>
+  <h1 className="text-[36px] font-extrabold mb-5" style={{ color: 'var(--text-primary)' }}>Contact SecureVision</h1>
  <p className="text-xl max-w-2xl mx-auto" style={{ color: 'var(--text-muted)' }}>
  Ready to secure your property? Fill out the form below for a free consultation, or call us directly.
  </p>

@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 
 export default function EmployeeLogin() {
     const [showPassword, setShowPassword] = useState(false);
-    const [form, setForm] = useState({ email: '', password: '' });
+    const [form, setForm] = useState({ credential: '', password: '' });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const { user, login } = useAuth();
@@ -15,18 +15,6 @@ export default function EmployeeLogin() {
 
     const from = location.state?.from || '/employee-dashboard';
 
-    // If already logged in, redirect to correct dashboard
-    useEffect(() => {
-        if (user) {
-            if (user.role === 'admin') {
-                navigate('/admin-dashboard', { replace: true });
-            } else if (user.role === 'employee') {
-                navigate('/employee-dashboard', { replace: true });
-            } else {
-                navigate('/dashboard', { replace: true });
-            }
-        }
-    }, [user, navigate]);
 
     const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -38,16 +26,26 @@ export default function EmployeeLogin() {
             const res = await login(form);
             if (res.success) {
                 const loggedInUser = res.user;
-                let targetPath = from;
-
-                // Ensure correct dashboard based on role if no specific redirect was requested
-                if (from === '/employee-dashboard') {
-                    if (loggedInUser.role === 'admin') {
-                        targetPath = '/admin-dashboard';
+                
+                if (loggedInUser.role === 'employee' || loggedInUser.role === 'admin') {
+                    let targetPath = from;
+    
+                    // Ensure correct dashboard based on role if no specific redirect was requested
+                    if (from === '/employee-dashboard') {
+                        if (loggedInUser.role === 'admin') {
+                            targetPath = '/admin-dashboard';
+                        }
                     }
+    
+                    navigate(targetPath, { replace: true });
+                } else {
+                    setError('Access Denied: This portal is for authorized personnel only. Please use the Client Login.');
+                    // Local logout logic
+                    setTimeout(() => {
+                        localStorage.removeItem('token');
+                        window.location.reload();
+                    }, 2000);
                 }
-
-                navigate(targetPath, { replace: true });
             }
         } catch (err) {
             setError(err.response?.data?.message || 'Employee authentication failed');
@@ -88,12 +86,12 @@ export default function EmployeeLogin() {
                                 <FiMail className="text-blue-600" /> Employee ID / Email
                             </label>
                             <input
-                                type="email"
-                                name="email"
+                                type="text"
+                                name="credential"
                                 required
-                                value={form.email}
+                                value={form.credential}
                                 onChange={handleChange}
-                                placeholder="staff@securevision.com"
+                                placeholder="EMP-101 or email@sv.com"
                                 className="w-full px-6 py-5 bg-gray-50 border border-gray-100 rounded-none focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none transition-all font-semibold text-sm"
                             />
                         </div>
@@ -132,14 +130,9 @@ export default function EmployeeLogin() {
                     </form>
 
                     <div className="mt-8 pt-6 border-t border-gray-100 text-center">
-                        <p className="text-[10px] text-gray-400 uppercase font-semibold tracking-widest">
-                            New Command Staff? {' '}
-                            <button
-                                onClick={() => navigate('/signup')}
-                                className="text-blue-600 hover:underline"
-                            >
-                                Register Account
-                            </button>
+                        <p className="text-[10px] text-gray-400 uppercase font-semibold tracking-widest leading-relaxed">
+                            Authorized Operations Personnel Only<br/>
+                            <span className="text-blue-600/50">Contact Admin for Access</span>
                         </p>
                     </div>
                 </div>

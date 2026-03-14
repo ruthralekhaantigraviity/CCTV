@@ -38,6 +38,15 @@ backend/seed.js
 backend/debug_routes.js
 backend/test_*.js
 backend/booking_test.json
+backend/check_*.js
+backend/fix_*.js
+backend/reset_*.js
+backend/revert_*.js
+backend/show_*.js
+backend/update_*.js
+backend/verify_*.js
+check_admin_db.js
+check_admin_output.txt
 
 # Vite temp files
 frontend/vite.config.js.timestamp-*

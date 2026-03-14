@@ -56,7 +56,7 @@ export default function InstallationTracking() {
         <div className="space-y-8">
             {/* Header */}
             <div>
-                <h1 className="text-3xl font-black text-slate-900 tracking-tighter">Installation Tracking</h1>
+                <h1 className="text-3xl font-black text-slate-900 tracking-tighter">Installation Tracker</h1>
             </div>
 
             {/* Stats */}

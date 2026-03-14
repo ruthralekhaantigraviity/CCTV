@@ -5,8 +5,10 @@ import {
     FiSearch, FiChevronDown, FiChevronUp, FiStar,
     FiHeart, FiShoppingBag, FiCheck
 } from 'react-icons/fi';
+import { FaHeart } from 'react-icons/fa';
 import { products } from '../data/products';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 
 export default function Products() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -15,10 +17,10 @@ export default function Products() {
     const [searchTerm, setSearchTerm] = useState(querySearch);
     const [category, setCategory] = useState('All');
     const [priceRange, setPriceRange] = useState(50000);
-    const [reviews, setReviews] = useState(0);
     const [sortBy, setSortBy] = useState('Default Sorting');
     const [addedMap, setAddedMap] = useState({});
     const { addToCart } = useCart();
+    const { toggleWishlist, isInWishlist } = useWishlist();
 
     const handleAddToCart = (product) => {
         addToCart(product);
@@ -34,8 +36,7 @@ export default function Products() {
     // Sidebar Section States (Accordions)
     const [sections, setSections] = useState({
         categories: true,
-        price: true,
-        reviews: true
+        price: true
     });
 
     const categories = useMemo(() => {
@@ -56,8 +57,7 @@ export default function Products() {
                 const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase());
                 const matchesCategory = category === 'All' || p.category === category;
                 const matchesPrice = p.price <= priceRange;
-                const matchesReviews = p.rating >= reviews;
-                return matchesSearch && matchesCategory && matchesPrice && matchesReviews;
+                return matchesSearch && matchesCategory && matchesPrice;
             })
             .sort((a, b) => {
                 if (sortBy === 'Price: Low to High') return a.price - b.price;
@@ -65,7 +65,7 @@ export default function Products() {
                 if (sortBy === 'Rating') return b.rating - a.rating;
                 return 0; // Default
             });
-    }, [searchTerm, category, priceRange, reviews, sortBy]);
+    }, [searchTerm, category, priceRange, sortBy]);
 
     return (
         <div className="products-page pt-32 min-h-screen pb-20" style={{ background: '#f8f9fa' }}>
@@ -161,41 +161,6 @@ export default function Products() {
                             </AnimatePresence>
                         </div>
 
-                        {/* Customer Review */}
-                        <div className="bg-white shadow-sm border border-gray-100 rounded-sm overflow-hidden">
-                            <button
-                                onClick={() => toggleSection('reviews')}
-                                className="w-full flex items-center justify-between p-5 text-sm font-bold uppercase tracking-wider"
-                            >
-                                Customer Review
-                                {sections.reviews ? <FiChevronUp /> : <FiChevronDown />}
-                            </button>
-                            <AnimatePresence>
-                                {sections.reviews && (
-                                    <motion.div
-                                        initial={{ height: 0 }}
-                                        animate={{ height: 'auto' }}
-                                        exit={{ height: 0 }}
-                                        className="overflow-hidden px-5 pb-5 space-y-2"
-                                    >
-                                        {[4, 3, 2, 1].map(stars => (
-                                            <button
-                                                key={stars}
-                                                onClick={() => setReviews(stars)}
-                                                className={`flex items-center gap-2 text-sm transition-colors ${reviews === stars ? 'text-blue-600 font-bold' : 'text-gray-600'}`}
-                                            >
-                                                <div className="flex text-orange-400">
-                                                    {[...Array(5)].map((_, i) => (
-                                                        <FiStar key={i} fill={i < stars ? 'currentColor' : 'none'} size={14} />
-                                                    ))}
-                                                </div>
-                                                & Up
-                                            </button>
-                                        ))}
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </div>
                     </aside>
 
                     {/* Main Content */}
@@ -235,24 +200,22 @@ export default function Products() {
                                             alt={p.name}
                                             className="w-full h-full object-contain mix-blend-multiply"
                                         />
-                                        <button className="absolute top-4 right-4 w-9 h-9 bg-white rounded-none flex items-center justify-center shadow-md text-gray-400 transition-colors">
-                                            <FiHeart />
+                                        <button 
+                                            onClick={() => toggleWishlist(p)}
+                                            className={`absolute top-4 right-4 w-9 h-9 bg-white rounded-none flex items-center justify-center shadow-md transition-all ${isInWishlist(p.id) ? 'text-red-500 scale-110' : 'text-gray-400'}`}
+                                        >
+                                            {isInWishlist(p.id) ? <FaHeart /> : <FiHeart />}
                                         </button>
                                     </div>
 
                                     {/* Info */}
                                     <div className="space-y-3">
-                                        <div className="flex justify-between items-start">
                                             <Link
                                                 to={`/products/${p.slug}`}
                                                 className="text-sm font-bold text-gray-900 line-clamp-2 transition-colors"
                                             >
                                                 {p.name}
                                             </Link>
-                                            <div className="flex items-center gap-1 text-orange-400 text-sm font-bold">
-                                                <FiStar fill="currentColor" /> {p.rating}
-                                            </div>
-                                        </div>
 
                                         <div className="pt-2">
                                             <p className="text-[10px] text-gray-400 font-bold tracking-widest uppercase">Starting From</p>

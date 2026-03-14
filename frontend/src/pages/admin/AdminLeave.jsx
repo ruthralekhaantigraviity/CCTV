@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { FiFileText, FiCheck, FiX, FiClock, FiCalendar, FiSearch } from 'react-icons/fi';
 import axios from 'axios';
 
-const API = '/api/leave';
+const API = 'http://localhost:5000/api/leave';
 
 export default function AdminLeave() {
     const [leaves, setLeaves] = useState([]);
@@ -11,7 +11,9 @@ export default function AdminLeave() {
     const [search, setSearch] = useState('');
     const [filterStatus, setFilterStatus] = useState('all');
 
-    useEffect(() => { fetchLeaves(); }, []);
+    useEffect(() => {
+        fetchLeaves();
+    }, []);
 
     const fetchLeaves = async () => {
         try {

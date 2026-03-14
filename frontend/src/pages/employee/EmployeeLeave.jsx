@@ -4,7 +4,8 @@ import { FiCalendar, FiClock, FiCheckCircle, FiXCircle, FiPlusCircle, FiX } from
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-const API = '/api/leave';
+const API_BASE = 'http://localhost:5000';
+const API = `${API_BASE}/api/leave`;
 
 const leaveTypes = ['Sick Leave', 'Casual Leave', 'Privilege Leave', 'Emergency Leave'];
 
@@ -15,9 +16,6 @@ const statusConfig = {
 };
 
 export default function EmployeeLeave() {
-    useEffect(() => {
-        window.alert('DEBUG 2559: EmployeeLeave.jsx is definitely running NEW code.');
-    }, []);
     const [leaves, setLeaves] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
@@ -29,6 +27,7 @@ export default function EmployeeLeave() {
         reason: '',
     });
 
+    // Simplified useEffect without debug alerts
     useEffect(() => { fetchMyLeaves(); }, []);
 
     const fetchMyLeaves = async () => {
@@ -58,7 +57,6 @@ export default function EmployeeLeave() {
             });
             return;
         }
-        if (!window.confirm('DEBUG: Proceed with leave submission?')) return;
         setSubmitting(true);
         try {
             const token = localStorage.getItem('token');

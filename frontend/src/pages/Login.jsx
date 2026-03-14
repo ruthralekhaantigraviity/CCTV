@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FiMail, FiLock, FiArrowRight, FiShield, FiEye, FiEyeOff } from 'react-icons/fi';
@@ -9,8 +9,15 @@ export default function Login() {
     const [form, setForm] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const { login } = useAuth();
+    const { login, user } = useAuth();
     const navigate = useNavigate();
+
+    // If already logged in, redirect to dashboard
+    useEffect(() => {
+        if (user && user.role === 'user') {
+            navigate('/dashboard');
+        }
+    }, [user, navigate]);
 
     const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -21,10 +28,27 @@ export default function Login() {
         try {
             const res = await login(form);
             if (res.success) {
-                navigate('/dashboard');
+                const loggedInUser = res.user;
+                if (loggedInUser && loggedInUser.role === 'user') {
+                    const params = new URLSearchParams(window.location.search);
+                    const redirect = params.get('redirect');
+                    navigate(redirect || '/dashboard');
+                } else if (loggedInUser) {
+                    setError('Access Denied: Please use the Operations Portal for employee/admin access.');
+                    // Immediately log out if wrong role
+                    setTimeout(() => {
+                        window.location.reload(); // Hard reload to clear auth state simply
+                        localStorage.removeItem('token');
+                    }, 2000);
+                } else {
+                    setError('Authentication succeeded but user data is missing. Please contact support.');
+                }
+            } else {
+                setError(res.message || 'Invalid credentials');
             }
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to login');
+            console.error('Login submit error:', err);
+            setError(err.response?.data?.message || err.message || 'Failed to login');
         } finally {
             setLoading(false);
         }
@@ -42,8 +66,8 @@ export default function Login() {
                     <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg ">
                         <FiShield className="text-white text-3xl" />
                     </div>
-                    <h1 className="text-3xl font-black text-gray-900 uppercase tracking-tighter">Welcome Back</h1>
-                    <p className="text-gray-500 mt-2">Access your SecureVision monitoring dashboard</p>
+                    <h1 className="text-3xl font-black text-gray-900 uppercase tracking-tighter">Client Login</h1>
+                    <p className="text-gray-500 mt-2">Access your SecureVision customer dashboard</p>
                 </div>
 
                 {/* Form Card */}
@@ -74,7 +98,7 @@ export default function Login() {
                                 <label className="text-xs font-black uppercase text-gray-400 tracking-widest flex items-center gap-2">
                                     <FiLock /> Password
                                 </label>
-                                <Link to="/contact" className="text-[10px] font-bold text-blue-600 uppercase hover:underline">Forgot Password?</Link>
+                                <Link to="/forgot-password" summer className="text-[10px] font-bold text-blue-600 uppercase hover:underline">Forgot Password?</Link>
                             </div>
                             <div className="relative">
                                 <input
@@ -99,7 +123,7 @@ export default function Login() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className={`w-full py-5 bg-[#0F1111] text-white font-black rounded-2xl flex items-center justify-center gap-3 transition-all hover:scale-[1.01] active:scale-[0.98] shadow-xl shadow-gray-200 uppercase tracking-widest text-sm ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                            className={`w-full py-5 bg-[#0F1111] text-white font-black rounded-2xl flex items-center justify-center gap-3 transition-all hover:scale-[1.01] active:scale-[0.98] uppercase tracking-widest text-sm ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
                         >
                             {loading ? 'Authenticating...' : 'Sign In'} <FiArrowRight />
                         </button>

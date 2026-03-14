@@ -3,9 +3,8 @@ import axios from 'axios';
 
 const AuthContext = createContext();
 
-const API_URL = import.meta.env.VITE_API_URL 
-    ? `${import.meta.env.VITE_API_URL}/api/auth` 
-    : 'https://cctv-kgck.onrender.com/api/auth';
+const API_BASE = ''; // Use relative path to leverage Vite proxy
+const API_URL = `${API_BASE}/api/auth`;
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
@@ -48,15 +47,19 @@ export const AuthProvider = ({ children }) => {
             });
             
             if (res.data.success) {
+                console.log('Login successful, setting user:', res.data.user);
                 localStorage.setItem('token', res.data.token);
                 setUser(res.data.user);
+            } else {
+                console.warn('Login failed with status 200:', res.data.message);
             }
             return res.data;
         } catch (err) {
             console.error('Login Error details:', {
                 status: err.response?.status,
                 data: err.response?.data,
-                message: err.message
+                message: err.message,
+                url: err.config?.url
             });
             throw err;
         }

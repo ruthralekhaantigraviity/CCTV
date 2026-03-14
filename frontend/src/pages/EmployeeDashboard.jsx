@@ -10,9 +10,10 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import EmployeeLeave from './employee/EmployeeLeave';
+import toast from 'react-hot-toast';
 
 export default function EmployeeDashboard() {
-    const { user, logout } = useAuth();
+    const { user, logout, loading: authLoading } = useAuth();
     const navigate = useNavigate();
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -71,23 +72,30 @@ export default function EmployeeDashboard() {
     }, [settings]);
 
     useEffect(() => {
-        fetchJobs();
-        fetchNotifications();
-        syncAttendance();
-        const interval = setInterval(() => {
+        if (!authLoading && (!user || (user.role !== 'employee' && user.role !== 'admin'))) {
+            navigate('/employee/login');
+            return;
+        }
+
+        if (user) {
             fetchJobs();
             fetchNotifications();
-        }, 5000);
+            syncAttendance();
+            const interval = setInterval(() => {
+                fetchJobs();
+                fetchNotifications();
+            }, 5000);
 
-        return () => clearInterval(interval);
-    }, []);
+            return () => clearInterval(interval);
+        }
+    }, [user, authLoading, navigate]);
 
     const syncAttendance = async () => {
         try {
             const token = localStorage.getItem('token');
             const today = new Date().toISOString().split('T')[0];
             
-            // Check if already punched in for today on server
+            // Fetch today's record from server
             const res = await fetch('/api/attendance/me', {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -100,26 +108,6 @@ export default function EmployeeDashboard() {
                         punchIn: todayRecord.clockIn ? new Date(todayRecord.clockIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null,
                         punchOut: todayRecord.clockOut ? new Date(todayRecord.clockOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null
                     });
-                } else {
-                    // Auto punch-in for login
-                    const punchRes = await fetch('/api/attendance/punch', {
-                        method: 'POST',
-                        headers: { 
-                            'Content-Type': 'application/json',
-                            Authorization: `Bearer ${token}`
-                        },
-                        body: JSON.stringify({
-                            date: today,
-                            type: 'in'
-                        })
-                    });
-                    const punchData = await punchRes.json();
-                    if (punchData.success) {
-                        setAttendance({
-                            punchIn: new Date(punchData.data.clockIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                            punchOut: null
-                        });
-                    }
                 }
             }
         } catch (error) {
@@ -129,7 +117,10 @@ export default function EmployeeDashboard() {
 
     const fetchJobs = async () => {
         try {
-            const response = await fetch('/api/jobs');
+            const token = localStorage.getItem('token');
+            const response = await fetch('/api/jobs', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             const data = await response.json();
             if (data.success) {
                 setJobs(data.data);
@@ -173,22 +164,33 @@ export default function EmployeeDashboard() {
 
     const handleAcceptJob = async (id) => {
         if (!user?.id) {
-            alert('Authentication required to accept jobs.');
+            toast.error('Authentication required to accept jobs.', {
+                style: { borderRadius: '0', background: '#333', color: '#fff' }
+            });
             return;
         }
 
         try {
+            const token = localStorage.getItem('token');
             const response = await fetch(`/api/jobs/${id}/accept`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({ employeeId: user.id })
             });
             const data = await response.json();
             if (data.success) {
                 fetchJobs();
                 setWorkflowTab('my-jobs');
+                toast.success('Job Accepted!', {
+                    style: { borderRadius: '0', background: '#0a1628', color: '#fff' }
+                });
             } else {
-                alert(data.message || 'Someone already took this job.');
+                toast.error(data.message || 'Someone already took this job.', {
+                    style: { borderRadius: '0', background: '#333', color: '#fff' }
+                });
                 fetchJobs();
             }
         } catch (error) {
@@ -202,6 +204,7 @@ export default function EmployeeDashboard() {
 
     const handleUpdateStatus = async (id, nextStatus) => {
         try {
+            const token = localStorage.getItem('token');
             const body = { status: nextStatus };
             if (nextStatus === 'completed' && jobImages[id]) {
                 body.completionImage = jobImages[id];
@@ -209,7 +212,10 @@ export default function EmployeeDashboard() {
 
             const response = await fetch(`/api/jobs/${id}/status`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify(body)
             });
             const data = await response.json();
@@ -217,6 +223,9 @@ export default function EmployeeDashboard() {
                 fetchJobs();
                 if (nextStatus === 'completed') {
                     setWorkflowTab('completed');
+                    toast.success('Mission Accomplished!', {
+                        style: { borderRadius: '0', background: '#10b981', color: '#fff' }
+                    });
                     setJobImages(prev => {
                         const next = { ...prev };
                         delete next[id];
@@ -224,11 +233,15 @@ export default function EmployeeDashboard() {
                     });
                 }
             } else {
-                alert(data.message || 'Failed to update job status.');
+                toast.error(data.message || 'Failed to update job status.', {
+                    style: { borderRadius: '0', background: '#333', color: '#fff' }
+                });
             }
         } catch (error) {
             console.error('Error updating status:', error);
-            alert('A network error occurred while updating the job.');
+            toast.error('A network error occurred.', {
+                style: { borderRadius: '0', background: '#333', color: '#fff' }
+            });
         }
     };
 
@@ -238,7 +251,9 @@ export default function EmployeeDashboard() {
 
         // Limit size to 10MB (approx 13.3MB Base64) to stay under MongoDB's 16MB document limit
         if (file.size > 10 * 1024 * 1024) {
-            alert('Image is too large. Please select a photo smaller than 10MB.');
+            toast.error('Image is too large (Max 10MB)', {
+                style: { borderRadius: '0', background: '#333', color: '#fff' }
+            });
             return;
         }
 
@@ -294,10 +309,14 @@ export default function EmployeeDashboard() {
         try {
             await updateUser(profileForm);
             setIsEditingProfile(false);
-            alert('Profile updated successfully!');
+            toast.success('Profile updated successfully!', {
+                style: { borderRadius: '0', background: '#0a1628', color: '#fff' }
+            });
         } catch (error) {
             console.error('Error updating profile:', error);
-            alert('Failed to update profile.');
+            toast.error('Failed to update profile.', {
+                style: { borderRadius: '0', background: '#333', color: '#fff' }
+            });
         }
     };
 
@@ -344,7 +363,7 @@ export default function EmployeeDashboard() {
                                     'bg-blue-50 text-blue-600'
                         }`}>
                         {isTakenByOther ? `Taken by ${job.assignedEmployee?.name || 'Technician'}` :
-                            (job.status === 'claimed' && isAssignedToMe) ? 'Claimed - Awaiting Admin' :
+                            isAssignedToMe && (job.status === 'assigned' || job.status === 'claimed') ? 'Active' :
                                 job.status.replace('_', ' ')}
                     </div>
                 </div>
@@ -427,13 +446,8 @@ export default function EmployeeDashboard() {
                         </div>
                     )}
 
-                    {isAssignedToMe && job.status === 'claimed' && (
-                        <div className="flex items-center justify-center gap-2 text-amber-500 font-semibold text-xs py-5 bg-amber-50 rounded-none border border-amber-100">
-                            Awaiting Admin Assignment
-                        </div>
-                    )}
 
-                    {isAssignedToMe && job.status === 'assigned' && (
+                    {isAssignedToMe && (job.status === 'assigned' || job.status === 'claimed') && (
                         <button
                             onClick={() => handleUpdateStatus(job._id, 'progress')}
                             className="w-full py-5 bg-[#10b981] text-white font-semibold rounded-none transition-all text-xs"
@@ -747,6 +761,10 @@ export default function EmployeeDashboard() {
                         )}
                         {!isEditingProfile && (
                             <div className="flex flex-wrap justify-center md:justify-start gap-4">
+                                <div className="bg-gray-50 px-5 py-3 rounded-none flex items-center gap-3">
+                                    <FiCalendar className="text-blue-500" />
+                                    <p className="font-semibold text-[14px] text-[#0a1628]">Joined <span className="text-gray-400 font-semibold ml-1">{user?.joinedDate ? new Date(user.joinedDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'March 2024'}</span></p>
+                                </div>
                                 <div className="bg-gray-50 px-5 py-3 rounded-none flex items-center gap-3">
                                     <FiStar className="text-amber-500" fill="currentColor" />
                                     <p className="font-semibold text-[14px] text-[#0a1628]">4.9 <span className="text-gray-400 font-semibold ml-1">Rating</span></p>

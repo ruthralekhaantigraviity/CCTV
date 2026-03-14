@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const Attendance = require('../models/Attendance');
 const { protect } = require('../middleware/authMiddleware');
 const { admin } = require('../middleware/adminMiddleware');
 
@@ -51,7 +52,8 @@ router.post('/register', async (req, res) => {
                     email: user.email,
                     phone: user.phone,
                     role: user.role,
-                    avatar: user.avatar
+                    avatar: user.avatar,
+                    joinedDate: user.createdAt
                 }
             });
         }
@@ -65,10 +67,40 @@ router.post('/register', async (req, res) => {
 // @access  Public
 router.post('/login', async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, credential, password } = req.body;
+        const loginId = credential || email;
 
-        const user = await User.findOne({ email }).select('+password');
+        const user = await User.findOne({
+            $or: [
+                { email: loginId },
+                { employeeId: loginId }
+            ]
+        }).select('+password');
+
         if (user && (await user.matchPassword(password))) {
+            if (user.isVerified === false) {
+                return res.status(401).json({ success: false, message: 'Please verify your email before logging in' });
+            }
+            if (user.role === 'employee') {
+                try {
+                    const now = new Date();
+                    const today = now.toISOString().split('T')[0];
+                    let attendance = await Attendance.findOne({ employee: user._id, date: today });
+                    
+                    if (!attendance) {
+                        await Attendance.create({
+                            employee: user._id,
+                            date: today,
+                            clockIn: now.toISOString(),
+                            status: 'Present'
+                        });
+                        console.log(`[Attendance] Auto-punch in for ${user.name} on login`);
+                    }
+                } catch (attendanceError) {
+                    console.error('[Attendance Error] Auto-attendance failed:', attendanceError.message);
+                }
+            }
+
             res.json({
                 success: true,
                 token: generateToken(user._id),
@@ -78,7 +110,8 @@ router.post('/login', async (req, res) => {
                     email: user.email,
                     phone: user.phone,
                     role: user.role,
-                    avatar: user.avatar
+                    avatar: user.avatar,
+                    joinedDate: user.createdAt
                 }
             });
         } else {
@@ -104,7 +137,8 @@ router.get('/profile', protect, async (req, res) => {
                     email: user.email,
                     phone: user.phone,
                     role: user.role,
-                    avatar: user.avatar
+                    avatar: user.avatar,
+                    joinedDate: user.createdAt
                 }
             });
         } else {
@@ -137,7 +171,8 @@ router.put('/profile', protect, async (req, res) => {
                 email: user.email,
                 phone: user.phone,
                 role: user.role,
-                avatar: user.avatar
+                avatar: user.avatar,
+                joinedDate: user.createdAt
             }
         });
     } catch (err) {
@@ -162,11 +197,16 @@ router.get('/employees', protect, admin, async (req, res) => {
 // @access  Private/Admin
 router.post('/employees', protect, admin, async (req, res) => {
     try {
-        const { name, email, phone, password, role = 'employee' } = req.body;
+        const { name, email, phone, password, role = 'employee', employeeId } = req.body;
 
-        const userExists = await User.findOne({ email });
-        if (userExists) {
-            return res.status(400).json({ success: false, message: 'User already exists' });
+        const emailExists = await User.findOne({ email });
+        if (emailExists) {
+            return res.status(400).json({ success: false, message: 'Email already registered. Use a different email.' });
+        }
+
+        const idExists = await User.findOne({ employeeId });
+        if (idExists) {
+            return res.status(400).json({ success: false, message: 'Employee ID already exists. Use a unique ID.' });
         }
 
         const user = await User.create({
@@ -174,7 +214,8 @@ router.post('/employees', protect, admin, async (req, res) => {
             email,
             phone,
             password,
-            role
+            role,
+            employeeId
         });
 
         res.status(201).json({
@@ -184,9 +225,26 @@ router.post('/employees', protect, admin, async (req, res) => {
                 name: user.name,
                 email: user.email,
                 phone: user.phone,
-                role: user.role
+                role: user.role,
+                employeeId: user.employeeId
             }
         });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// @desc    Delete employee (Admin only)
+// @route   DELETE /api/auth/employees/:id
+// @access  Private/Admin
+router.delete('/employees/:id', protect, admin, async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'Employee not found' });
+        }
+        await User.findByIdAndDelete(req.params.id);
+        res.json({ success: true, message: 'Employee removed' });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }

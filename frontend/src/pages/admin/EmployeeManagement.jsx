@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiUsers, FiUserCheck, FiSearch, FiPlusCircle, FiEdit2, FiTrash2, FiShield, FiX, FiMail, FiPhone, FiLock, FiTerminal } from 'react-icons/fi';
+import { FiUsers, FiUserCheck, FiSearch, FiPlusCircle, FiEdit2, FiTrash2, FiShield, FiX, FiMail, FiPhone, FiLock, FiTerminal, FiHash } from 'react-icons/fi';
 import axios from 'axios';
+import toast from 'react-hot-toast';
+import { confirmToast } from '../../utils/confirmToast';
 
 export default function EmployeeManagement() {
     const [employees, setEmployees] = useState([]);
@@ -9,12 +11,14 @@ export default function EmployeeManagement() {
     const [search, setSearch] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [formLoading, setFormLoading] = useState(false);
+    const [editEmployee, setEditEmployee] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         phone: '',
         password: '',
-        role: 'employee'
+        role: 'employee',
+        employeeId: ''
     });
 
     useEffect(() => {
@@ -24,10 +28,12 @@ export default function EmployeeManagement() {
     const fetchEmployees = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('/api/auth/employees', { headers: { Authorization: `Bearer ${token}` } });
+            const res = await axios.get('http://localhost:5000/api/auth/employees', { 
+                headers: { Authorization: `Bearer ${token}` } 
+            });
             setEmployees(res.data.data || []);
         } catch (err) {
-            console.error('Failed to fetch employees');
+            console.error('Failed to fetch employees:', err);
         } finally {
             setLoading(false);
         }
@@ -36,19 +42,51 @@ export default function EmployeeManagement() {
     const handleAddMember = async (e) => {
         e.preventDefault();
         setFormLoading(true);
+        console.log('--- REGISTERING EMPLOYEE ---');
+        console.log('DATA:', formData);
+        
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.post('/api/auth/employees', formData, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            let res;
+            if (editEmployee) {
+                // Remove password from update if it's empty
+                const updateData = { ...formData };
+                if (!updateData.password) delete updateData.password;
+                
+                res = await axios.put(`http://localhost:5000/api/auth/employees/${editEmployee._id}`, updateData, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+            } else {
+                res = await axios.post('http://localhost:5000/api/auth/employees', formData, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+            }
+            
             if (res.data.success) {
+                console.log('OPERATION SUCCESS');
                 setIsModalOpen(false);
-                setFormData({ name: '', email: '', phone: '', password: '', role: 'employee' });
+                setEditEmployee(null);
+                setFormData({ name: '', email: '', phone: '', password: '', role: 'employee', employeeId: '' });
                 fetchEmployees();
-                alert('Member registered successfully!');
+                toast.success(editEmployee ? 'Employee Updated!' : 'Employee Registered Successfully!', {
+                    style: {
+                        borderRadius: '0px',
+                        background: '#0f172a',
+                        color: '#fff',
+                        fontWeight: 'bold',
+                        fontSize: '12px'
+                    }
+                });
             }
         } catch (err) {
-            alert(err.response?.data?.message || 'Failed to add member');
+            console.error('REGISTRATION FAILURE:', err);
+            const errMsg = err.response?.data?.message || 'Failed to register employee';
+            toast.error(errMsg, {
+                style: {
+                    borderRadius: '0px',
+                    fontSize: '12px'
+                },
+            });
         } finally {
             setFormLoading(false);
         }
@@ -57,18 +95,18 @@ export default function EmployeeManagement() {
     const filtered = employees.filter(e =>
         e.name?.toLowerCase().includes(search.toLowerCase()) ||
         e.email?.toLowerCase().includes(search.toLowerCase()) ||
-        e.role?.toLowerCase().includes(search.toLowerCase())
+        e.employeeId?.toLowerCase().includes(search.toLowerCase())
     );
 
     const roleColors = {
-        technician: 'bg-blue-50 text-blue-600',
+        technician: 'bg-slate-50 text-slate-600',
         admin: 'bg-red-50 text-red-500',
         manager: 'bg-purple-50 text-purple-600',
     };
 
     if (loading) return (
         <div className="flex items-center justify-center h-64">
-            <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+            <div className="w-10 h-10 border-4 border-slate-900 border-t-transparent rounded-full animate-spin" />
         </div>
     );
 
@@ -80,8 +118,12 @@ export default function EmployeeManagement() {
                     <h1 className="text-3xl font-black text-slate-900 tracking-tighter">Employee Management</h1>
                 </div>
                 <button
-                    onClick={() => setIsModalOpen(true)}
-                    className="flex items-center gap-2 px-6 py-3 bg-white border-2 border-black text-black hover:bg-gray-100 text-[10px] font-black uppercase tracking-widest rounded-none transition-all"
+                    onClick={() => {
+                        setEditEmployee(null);
+                        setFormData({ name: '', email: '', phone: '', password: '', role: 'employee', employeeId: '' });
+                        setIsModalOpen(true);
+                    }}
+                    className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white hover:bg-black text-[10px] font-black uppercase tracking-widest rounded-none transition-all shadow-xl"
                 >
                     <FiPlusCircle size={16} /> Add Employee
                 </button>
@@ -92,10 +134,10 @@ export default function EmployeeManagement() {
                 <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
                 <input
                     type="text"
-                    placeholder="Search by name, email, or role..."
+                    placeholder="Search by name, email, or employee ID..."
                     value={search}
                     onChange={e => setSearch(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-white border border-gray-100 text-sm text-slate-700 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-100 "
+                    className="w-full pl-10 pr-4 py-3.5 bg-white border border-gray-100 text-sm text-slate-700 placeholder-slate-300 focus:outline-none focus:ring-1 focus:ring-slate-900 rounded-none"
                 />
             </div>
 
@@ -107,7 +149,7 @@ export default function EmployeeManagement() {
                             <tr className="border-b border-gray-100 bg-gray-50/60">
                                 <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-slate-400">Employee</th>
                                 <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-slate-400">Contact Access</th>
-                                <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-slate-400">Authorization Role</th>
+                                <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-slate-400">Employee ID</th>
                                 <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-slate-400">Status</th>
                                 <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-slate-400 text-right">Actions</th>
                             </tr>
@@ -135,44 +177,71 @@ export default function EmployeeManagement() {
                                             </div>
                                             <div>
                                                 <p className="font-black text-slate-800 text-sm leading-tight">{emp.name}</p>
-                                                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">ID: {emp._id.slice(-6).toUpperCase()}</p>
+                                                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">{emp.role}</p>
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-6 py-5">
                                         <div className="space-y-1">
                                             <div className="flex items-center gap-2 text-slate-600">
-                                                <FiMail size={12} className="text-blue-500" />
+                                                <FiMail size={12} className="text-slate-400" />
                                                 <span className="text-xs font-bold">{emp.email}</span>
                                             </div>
                                             <div className="flex items-center gap-2 text-slate-600">
-                                                <FiPhone size={12} className="text-blue-500" />
+                                                <FiPhone size={12} className="text-slate-400" />
                                                 <span className="text-xs font-bold">{emp.phone || 'N/A'}</span>
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-6 py-5">
-                                        <span className={`px-3 py-1.5 text-[9px] font-black uppercase tracking-widest ${roleColors[emp.role?.toLowerCase()] || 'bg-slate-100 text-slate-600'}`}>
-                                            {emp.role || 'Technician'}
-                                        </span>
+                                        <div className="flex items-center gap-2 text-slate-900 bg-slate-50 px-3 py-1.5 w-fit border border-slate-100">
+                                            <FiHash size={10} className="text-slate-400" />
+                                            <span className="text-[10px] font-black tracking-widest uppercase">{emp.employeeId || 'NOT SET'}</span>
+                                        </div>
                                     </td>
                                     <td className="px-6 py-5">
                                         <div className="flex items-center gap-2">
-                                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                                            <span className="text-[10px] font-black text-emerald-600 uppercase tracking-wide">Authorized</span>
+                                            <div className="w-2 h-2 bg-emerald-500" />
+                                            <span className="text-[10px] font-black text-emerald-600 uppercase tracking-wide">ACTIVE</span>
                                         </div>
                                     </td>
                                     <td className="px-6 py-5 text-right">
                                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
                                             <button 
-                                                className="p-2.5 bg-white border border-slate-100 text-blue-600 hover:bg-blue-600 hover:text-white transition-all shadow-sm"
-                                                title="Edit Access"
+                                                onClick={() => {
+                                                    setEditEmployee(emp);
+                                                    setFormData({
+                                                        name: emp.name,
+                                                        email: emp.email,
+                                                        phone: emp.phone || '',
+                                                        password: '', // Leave empty for no change
+                                                        role: emp.role || 'employee',
+                                                        employeeId: emp.employeeId || ''
+                                                    });
+                                                    setIsModalOpen(true);
+                                                }}
+                                                className="p-2.5 bg-white border border-slate-100 text-slate-600 hover:bg-black hover:text-white transition-all shadow-sm"
                                             >
                                                 <FiEdit2 size={13} />
                                             </button>
                                             <button 
+                                                onClick={() => {
+                                                    confirmToast(
+                                                        'Remove Personnel?',
+                                                        `Are you sure you want to remove ${emp.name}? This will revoke all terminal access immediately.`,
+                                                        async () => {
+                                                            try {
+                                                                const token = localStorage.getItem('token');
+                                                                await axios.delete(`http://localhost:5000/api/auth/employees/${emp._id}`, { headers: { Authorization: `Bearer ${token}` } });
+                                                                toast.success('Employee removed');
+                                                                fetchEmployees();
+                                                            } catch(err) {
+                                                                toast.error('Failed to remove employee');
+                                                            }
+                                                        }
+                                                    );
+                                                }}
                                                 className="p-2.5 bg-white border border-slate-100 text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-sm"
-                                                title="Revoke Access"
                                             >
                                                 <FiTrash2 size={13} />
                                             </button>
@@ -188,39 +257,39 @@ export default function EmployeeManagement() {
             {/* Registration Modal */}
             <AnimatePresence>
                 {isModalOpen && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            initial={{ opacity: 0, scale: 0.95, y: 10 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                            className="bg-white w-full max-w-lg shadow-2xl  overflow-hidden flex flex-col"
+                            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                            className="bg-white w-full max-w-lg shadow-[0_0_50px_rgba(0,0,0,0.2)] overflow-hidden flex flex-col"
                         >
-                            <div className="bg-slate-900 p-8 text-white relative">
+                            <div className="bg-slate-900 p-10 text-white relative">
                                 <button
                                     onClick={() => setIsModalOpen(false)}
-                                    className="absolute top-8 right-8 text-slate-400 hover:text-white transition-colors"
+                                    className="absolute top-10 right-10 text-slate-500 hover:text-white transition-colors"
                                 >
                                     <FiX size={20} />
                                 </button>
-                                <div className="w-12 h-12 bg-blue-600 flex items-center justify-center mb-6 shadow-2xl ">
-                                    <FiTerminal size={24} />
+                                <div className="w-12 h-12 bg-white/10 flex items-center justify-center mb-6">
+                                    <FiUserCheck size={24} />
                                 </div>
-                                <h3 className="text-xl font-black uppercase tracking-tighter">Register New Employee</h3>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em] mt-2">Staff Registration Protocol</p>
+                                <h3 className="text-xl font-black uppercase tracking-tighter">{editEmployee ? 'Edit Employee' : 'Register Employee'}</h3>
+                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] mt-2">{editEmployee ? 'Modify Staff Credentials & Profile' : 'Staff Access Provisioning Protocol'}</p>
                             </div>
 
-                            <form onSubmit={handleAddMember} className="p-10 space-y-6">
+                            <form onSubmit={handleAddMember} className="p-10 space-y-8">
                                 <div className="space-y-2">
                                     <label className="text-[9px] font-black uppercase text-slate-400 tracking-widest pl-1">Full Identity</label>
                                     <div className="relative">
-                                        <FiTerminal className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500" />
+                                        <FiTerminal className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                                         <input
                                             required
                                             type="text"
                                             placeholder="Enter Full Name"
                                             value={formData.name}
                                             onChange={e => setFormData({ ...formData, name: e.target.value })}
-                                            className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 text-sm font-bold focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none transition-all "
+                                            className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 text-sm font-bold focus:bg-white focus:border-slate-900 outline-none transition-all"
                                         />
                                     </div>
                                 </div>
@@ -229,44 +298,61 @@ export default function EmployeeManagement() {
                                     <div className="space-y-2">
                                         <label className="text-[9px] font-black uppercase text-slate-400 tracking-widest pl-1">Email Access</label>
                                         <div className="relative">
-                                            <FiMail className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500" />
+                                            <FiMail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                                             <input
                                                 required
                                                 type="email"
                                                 placeholder="staff@sv.com"
                                                 value={formData.email}
                                                 onChange={e => setFormData({ ...formData, email: e.target.value })}
-                                                className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 text-sm font-bold focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none transition-all "
+                                                className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 text-sm font-bold focus:bg-white focus:border-slate-900 outline-none transition-all"
                                             />
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[9px] font-black uppercase text-slate-400 tracking-widest pl-1">Comms Link</label>
+                                        <label className="text-[9px] font-black uppercase text-slate-400 tracking-widest pl-1">Staff ID</label>
                                         <div className="relative">
-                                            <FiPhone className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500" />
+                                            <FiHash className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                                             <input
                                                 required
-                                                type="tel"
-                                                placeholder="+91 00000 00000"
-                                                value={formData.phone}
-                                                onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                                                className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 text-sm font-bold focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none transition-all "
+                                                type="text"
+                                                placeholder="EMP-101"
+                                                value={formData.employeeId}
+                                                onChange={e => setFormData({ ...formData, employeeId: e.target.value })}
+                                                className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 text-sm font-bold focus:bg-white focus:border-slate-900 outline-none transition-all"
                                             />
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-[9px] font-black uppercase text-slate-400 tracking-widest pl-1">Secure Credential</label>
+                                    <label className="text-[9px] font-black uppercase text-slate-400 tracking-widest pl-1">Comms Link</label>
                                     <div className="relative">
-                                        <FiLock className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500" />
+                                        <FiPhone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                                         <input
                                             required
+                                            type="tel"
+                                            placeholder="+91 00000 00000"
+                                            value={formData.phone}
+                                            onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                                            className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 text-sm font-bold focus:bg-white focus:border-slate-900 outline-none transition-all"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-[9px] font-black uppercase text-slate-400 tracking-widest pl-1">
+                                        {editEmployee ? 'Update Credential (Leave blank to keep same)' : 'Secure Credential'}
+                                    </label>
+                                    <div className="relative">
+                                        <FiLock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                                        <input
+                                            required={!editEmployee}
                                             type="password"
-                                            placeholder="Assign Temporary Password"
+                                            placeholder={editEmployee ? 'Optional: Enter new password' : 'Assign Password'}
                                             value={formData.password}
                                             onChange={e => setFormData({ ...formData, password: e.target.value })}
-                                            className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 text-sm font-bold focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none transition-all "
+                                            className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 text-sm font-bold focus:bg-white focus:border-slate-900 outline-none transition-all"
                                         />
                                     </div>
                                 </div>
@@ -274,11 +360,11 @@ export default function EmployeeManagement() {
                                 <button
                                     type="submit"
                                     disabled={formLoading}
-                                    className="w-full py-5 bg-slate-900 text-white font-black uppercase tracking-[0.3em] text-[10px] hover:bg-blue-600 transition-all shadow-xl flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50"
+                                    className="w-full py-5 bg-slate-900 text-white font-black uppercase tracking-[0.3em] text-[10px] hover:bg-black transition-all shadow-2xl flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50"
                                 >
-                                    {formLoading ? 'Executing...' : 'Authorize Personnel'}
+                                    {formLoading ? 'Executing...' : editEmployee ? 'Update Profile' : 'Register Employee'}
                                 </button>
-                                <p className="text-center text-[8px] font-black text-slate-300 uppercase tracking-widest">Employee will gain immediate access to terminal commands upon authorization</p>
+                                <p className="text-center text-[8px] font-black text-slate-300 uppercase tracking-widest mt-4">Authorization will grant immediate secure terminal access</p>
                             </form>
                         </motion.div>
                     </div>

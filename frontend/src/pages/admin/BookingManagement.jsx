@@ -6,6 +6,7 @@ import {
  FiCamera, FiMail, FiSearch, FiFilter
 } from 'react-icons/fi';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 export default function BookingManagement() {
  const [bookings, setBookings] = useState([]);

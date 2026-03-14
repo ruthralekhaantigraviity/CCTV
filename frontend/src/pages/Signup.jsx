@@ -31,7 +31,9 @@ export default function Signup() {
         try {
             const res = await register(form);
             if (res.success) {
-                navigate('/dashboard');
+                const params = new URLSearchParams(window.location.search);
+                const redirect = params.get('redirect');
+                navigate(redirect || '/dashboard');
             }
         } catch (err) {
             setError(err.response?.data?.message || 'Registration failed');
@@ -175,7 +177,7 @@ export default function Signup() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className={`w-full py-4 bg-[#0F1111] text-white font-black rounded-xl flex items-center justify-center gap-3 transition-all shadow-xl shadow-gray-200 uppercase tracking-widest text-xs mt-4 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                            className={`w-full py-4 bg-[#0F1111] text-white font-black rounded-xl flex items-center justify-center gap-3 transition-all uppercase tracking-widest text-xs mt-4 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
                         >
                             {loading ? 'Creating Account...' : 'Get Started'} <FiArrowRight />
                         </button>

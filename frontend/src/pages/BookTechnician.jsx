@@ -1,9 +1,13 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiCalendar, FiClock, FiUser, FiPhone, FiMail, FiMapPin, FiCheckCircle, FiShield, FiArrowRight } from 'react-icons/fi';
 import CTABanner from '../components/CTABanner';
+import toast from 'react-hot-toast';
+import { useAuth } from '../context/AuthContext';
 
 export default function BookTechnician() {
+    const { user } = useAuth();
     const [step, setStep] = useState(1);
     const [form, setForm] = useState({
         name: '',
@@ -40,11 +44,15 @@ export default function BookTechnician() {
             if (data.success) {
                 setSubmitted(true);
             } else {
-                alert(data.message || 'Failed to book slot. Please try again.');
+                toast.error(data.message || 'Failed to book slot. Please try again.', {
+                    style: { borderRadius: '0', background: '#333', color: '#fff' }
+                });
             }
         } catch (error) {
             console.error('Booking error:', error);
-            alert('A network error occurred. Please try again.');
+            toast.error('A network error occurred. Please try again.', {
+                style: { borderRadius: '0', background: '#333', color: '#fff' }
+            });
         }
     };
 
@@ -80,7 +88,7 @@ export default function BookTechnician() {
 
                 <div className="text-center mb-12">
                     <p className="text-blue-600 font-bold uppercase tracking-widest text-xs mb-3">Professional Service</p>
-                    <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-4 uppercase tracking-tighter">Book a Technician</h1>
+                    <h1 className="text-[36px] font-black text-gray-900 mb-4 uppercase tracking-tighter">Book a Technician</h1>
                     <p className="text-gray-500 max-w-2xl mx-auto text-lg">
                         Schedule a certified SecureVision expert for your installation, maintenance, or security assessment.
                     </p>
@@ -111,10 +119,10 @@ export default function BookTechnician() {
                             </div>
                         </div>
 
-                        <div className="p-6 bg-blue-600 rounded-2xl text-white shadow-xl ">
-                            <p className="text-xs uppercase tracking-widest mb-1 opacity-80 font-bold">24/7 Helpline</p>
-                            <p className="text-2xl font-black mb-4">+1 800 123 4567</p>
-                            <p className="text-sm opacity-90 leading-relaxed">Call us directly if you need emergency support or have specific technical queries.</p>
+                        <div className="p-6 bg-red-50 border border-red-100 rounded-2xl shadow-sm transition-all hover:shadow-md group">
+                            <p className="text-[10px] uppercase tracking-widest mb-1 text-red-500 font-bold opacity-80">24/7 Helpline</p>
+                            <p className="text-2xl font-black mb-4 text-red-600">+1 800 123 4567</p>
+                            <p className="text-sm text-red-700/80 font-medium leading-relaxed">Call us directly if you need emergency support or have specific technical queries.</p>
                         </div>
                     </div>
 
@@ -204,12 +212,36 @@ export default function BookTechnician() {
 
 
                                 <div className="pt-6">
-                                    <button
-                                        type="submit"
-                                        className="w-full py-5 bg-white border border-gray-200 text-gray-800 font-black rounded-none flex items-center justify-center gap-3 transition-all hover:bg-gray-50 hover:border-gray-300 uppercase tracking-widest text-sm"
-                                    >
-                                        Confirm Booking <FiArrowRight />
-                                    </button>
+                                    {user ? (
+                                        <button
+                                            type="submit"
+                                            className="w-full py-5 bg-white border border-gray-200 text-gray-800 font-black rounded-none flex items-center justify-center gap-3 transition-all hover:bg-gray-50 hover:border-gray-300 uppercase tracking-widest text-sm"
+                                        >
+                                            Confirm Booking <FiArrowRight />
+                                        </button>
+                                    ) : (
+                                        <div className="space-y-4">
+                                            <div className="p-4 bg-blue-50 border border-blue-100 rounded-none text-center">
+                                                <p className="text-xs font-bold text-blue-800 uppercase tracking-widest leading-loose">
+                                                    Authentication Required to Confirm Slot
+                                                </p>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <Link 
+                                                    to="/login?redirect=/book-technician"
+                                                    className="py-4 bg-slate-900 text-white text-center font-black uppercase tracking-widest text-[10px] hover:bg-black transition-all"
+                                                >
+                                                    Sign In
+                                                </Link>
+                                                <Link 
+                                                    to="/signup?redirect=/book-technician"
+                                                    className="py-4 bg-white border border-slate-900 text-slate-900 text-center font-black uppercase tracking-widest text-[10px] hover:bg-slate-50 transition-all"
+                                                >
+                                                    Register
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    )}
                                     <p className="text-center text-[10px] text-gray-400 mt-4 uppercase font-bold tracking-widest">No upfront payment required for slot booking</p>
                                 </div>
 

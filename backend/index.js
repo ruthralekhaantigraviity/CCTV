@@ -7,9 +7,27 @@ const app = express();
 
 // Connection placeholder (moved to startServer)
 
+const fs = require('fs');
+const path = require('path');
+
 // Middleware
 app.use((req, res, next) => {
-    console.log(`[${new Date().toLocaleTimeString()}] ${req.method} ${req.url}`);
+    const authHeader = req.headers.authorization || 'NONE';
+    const start = Date.now();
+    
+    // Intercept finish to log response status
+    res.on('finish', () => {
+        const duration = Date.now() - start;
+        const log = `[${new Date().toISOString()}] ${req.method} ${req.url} | STATUS: ${res.statusCode} | AUTH: ${authHeader.substring(0, 30)} | ${duration}ms\n`;
+        fs.appendFileSync(path.join(__dirname, 'antigravity_server.log'), log);
+        console.log(log.trim());
+    });
+
+    if (req.method === 'POST' && req.url.includes('/api/auth/employees')) {
+        console.log('--- EMPLOYEE REGISTRATION DATA ---');
+        console.log(JSON.stringify(req.body, null, 2));
+        console.log('---------------------------------');
+    }
     next();
 });
 
@@ -21,8 +39,8 @@ app.use(cors({
     credentials: true,
 }));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Routes
 app.get('/', (req, res) => {
@@ -38,6 +56,7 @@ app.use('/api/leave', require('./routes/leave'));
 app.use('/api/jobs', require('./routes/jobs'));
 app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/attendance', require('./routes/attendance'));
+app.use('/api/products', require('./routes/products'));
 
 app.get('/api/health', (req, res) => {
     res.json({
@@ -56,6 +75,8 @@ app.use((req, res) => {
 
 // Error handler
 app.use((err, req, res, next) => {
+    const errorLog = `[${new Date().toISOString()}] ERROR: ${err.message}\n${err.stack}\n`;
+    fs.appendFileSync(path.join(__dirname, 'antigravity_server.log'), errorLog);
     console.error(err.stack);
     res.status(500).json({ success: false, message: 'Internal server error' });
 });

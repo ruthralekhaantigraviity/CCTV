@@ -25,6 +25,9 @@ export default function Home() {
             {/* Hero */}
             <HeroSection />
 
+            {/* Featured Products */}
+            <ProductShowcase />
+
             {/* Services Overview */}
             <ServicesGrid />
 
@@ -228,9 +231,6 @@ export default function Home() {
 
             {/* Industries */}
             <IndustriesGrid />
-
-            {/* Featured Products */}
-            <ProductShowcase />
 
             {/* CTA */}
             <CTABanner />

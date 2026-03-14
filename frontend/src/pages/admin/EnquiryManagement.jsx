@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FiMail, FiSearch, FiCheck, FiTrash2, FiInbox, FiMessageCircle } from 'react-icons/fi';
 import axios from 'axios';
+import toast from 'react-hot-toast';
+import { confirmToast } from '../../utils/confirmToast';
 
 const API_URL = '/api/contact';
 
@@ -42,16 +44,24 @@ export default function EnquiryManagement() {
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm('Delete this enquiry?')) return;
-        try {
-            const token = localStorage.getItem('token');
-            const res = await axios.delete(`${API_URL}/${id}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            if (res.data.success) setEnquiries(enquiries.filter(enq => enq._id !== id));
-        } catch (err) {
-            console.error('Failed to delete enquiry');
-        }
+        confirmToast(
+            'Purge Enquiry?',
+            'This will permanently remove the customer communication from the central vault.',
+            async () => {
+                try {
+                    const token = localStorage.getItem('token');
+                    const res = await axios.delete(`${API_URL}/${id}`, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    });
+                    if (res.data.success) {
+                        setEnquiries(enquiries.filter(enq => enq._id !== id));
+                        toast.success('Enquiry purged');
+                    }
+                } catch (err) {
+                    toast.error('Failed to delete enquiry');
+                }
+            }
+        );
     };
 
     const filtered = enquiries.filter(enq => {

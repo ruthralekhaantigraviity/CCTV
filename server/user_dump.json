@@ -1,0 +1,38 @@
+[
+  {
+    "_id": "69aaa11b549cdb8422a29adb",
+    "name": "Ruthra Lekha",
+    "email": "kmruthra01@gmail.com",
+    "role": "admin"
+  },
+  {
+    "_id": "69aaa1d53f47b6882f7d334b",
+    "name": "Abi",
+    "email": "abi@gmail.com",
+    "role": "user"
+  },
+  {
+    "_id": "69ae592934f445c330e53666",
+    "name": "r",
+    "email": "admin@securevision.com",
+    "role": "admin"
+  },
+  {
+    "_id": "69ae75bb9dbcf890fe60b0da",
+    "name": "System Administrator",
+    "email": "admin@sv.com",
+    "role": "admin"
+  },
+  {
+    "_id": "69ae75bb9dbcf890fe60b0dd",
+    "name": "Elite Field Operative",
+    "email": "emp@sv.com",
+    "role": "employee"
+  },
+  {
+    "_id": "69b190d417e0680776f25f1e",
+    "name": "R",
+    "email": "r@gmail.com",
+    "role": "user"
+  }
+]

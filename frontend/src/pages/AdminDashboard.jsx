@@ -11,7 +11,6 @@ import AdminOverview from './admin/AdminOverview';
 import AdminBooking from './admin/AdminBooking';
 import AdminDashboardHome from './admin/AdminDashboardHome';
 import AdminAttendance from './admin/AdminAttendance';
-import AdminLeave from './admin/AdminLeave';
 import InventoryManagement from './admin/InventoryManagement';
 import EmployeeManagement from './admin/EmployeeManagement';
 import InstallationTracking from './admin/InstallationTracking';
@@ -42,9 +41,9 @@ export default function AdminDashboard() {
         { id: 'bookings', label: 'Bookings', icon: FiCalendar, path: '/admin-dashboard/bookings' },
         { id: 'employees', label: 'Employees', icon: FiUsers, path: '/admin-dashboard/employees' },
         { id: 'attendance', label: 'Attendance', icon: FiUser, path: '/admin-dashboard/attendance' },
-        { id: 'leave', label: 'Leave', icon: FiFileText, path: '/admin-dashboard/leave' },
-        { id: 'tracked', label: 'Tracked', icon: FiTruck, path: '/admin-dashboard/tracked' },
+        { id: 'tracked', label: 'Tracker', icon: FiTruck, path: '/admin-dashboard/tracked' },
         { id: 'enquiries', label: 'Enquiries', icon: FiMail, path: '/admin-dashboard/enquiries' },
+        { id: 'products', label: 'Products', icon: FiBox, path: '/admin-dashboard/products' },
         { id: 'settings', label: 'Settings', icon: FiSettings, path: '/admin-dashboard/settings' },
     ];
 
@@ -98,6 +97,17 @@ export default function AdminDashboard() {
 
             {/* Main Content Area */}
             <main className="flex-grow lg:ml-72 p-6 lg:p-12 min-h-screen relative bg-white">
+                <div className="flex justify-end items-center mb-8 pb-8 border-b border-gray-100/50">
+                    <div className="flex items-center gap-4">
+                        <div className="text-right flex flex-col items-end">
+                            <span className="text-lg font-bold text-slate-700 tracking-tight leading-none">{user?.name}</span>
+                        </div>
+                        <div className="w-12 h-12 bg-blue-50/50 text-blue-600 flex items-center justify-center rounded-none border border-blue-100 shadow-sm transition-all">
+                            <FiUser size={20} />
+                        </div>
+                    </div>
+                </div>
+
                 <div className="admin-content-wrapper">
                     <Routes>
                         <Route index element={<AdminDashboardHome />} />
@@ -106,7 +116,6 @@ export default function AdminDashboard() {
                         <Route path="products" element={<InventoryManagement />} />
                         <Route path="employees" element={<EmployeeManagement />} />
                         <Route path="attendance" element={<AdminAttendance />} />
-                        <Route path="leave" element={<AdminLeave />} />
                         <Route path="tracked" element={<InstallationTracking />} />
                         <Route path="enquiries" element={<EnquiryManagement />} />
                         <Route path="settings" element={<AdminSettings />} />

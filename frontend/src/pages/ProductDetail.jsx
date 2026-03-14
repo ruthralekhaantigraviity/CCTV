@@ -5,14 +5,47 @@ import {
     FiStar, FiCheckCircle, FiShield, FiTruck, FiLock,
     FiMapPin, FiShare2, FiHeart, FiArrowLeft, FiShoppingBag, FiVideo, FiX
 } from 'react-icons/fi';
+import { FaHeart } from 'react-icons/fa';
 import { products } from '../data/products';
 import CTABanner from '../components/CTABanner';
+import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
+import toast from 'react-hot-toast';
 
 export default function ProductDetail() {
     const { slug } = useParams();
-    const [qty, setQty] = useState(1);
     const [activeImg, setActiveImg] = useState(0);
     const [isVideoSelected, setIsVideoSelected] = useState(false);
+    const { toggleWishlist, isInWishlist } = useWishlist();
+    const { addToCart } = useCart();
+
+    const handleAddToCart = () => {
+        addToCart(product);
+        toast.success(`${product.name} added to cart!`, {
+            style: { borderRadius: '0', background: '#333', color: '#fff', fontSize: '12px', fontWeight: 'bold' }
+        });
+    };
+
+    const handleShare = async () => {
+        const shareData = {
+            title: product.name,
+            text: product.desc,
+            url: window.location.href,
+        };
+
+        try {
+            if (navigator.share) {
+                await navigator.share(shareData);
+            } else {
+                await navigator.clipboard.writeText(window.location.href);
+                toast.success('Link Copied to Clipboard', {
+                    style: { borderRadius: '0', background: '#333', color: '#fff', fontSize: '12px', fontWeight: 'bold' }
+                });
+            }
+        } catch (err) {
+            console.error('Share failed:', err);
+        }
+    };
 
     const product = products.find((p) => p.slug === slug);
 
@@ -99,10 +132,16 @@ export default function ProductDetail() {
                                 </div>
                             )}
                             <div className="absolute top-6 right-6 flex flex-col gap-3">
-                                <button className="p-3 bg-white rounded-full shadow-lg text-gray-400 transition-all">
-                                    <FiHeart />
+                                <button 
+                                    onClick={() => toggleWishlist(product)}
+                                    className={`p-3 bg-white rounded-full shadow-lg transition-all ${isInWishlist(product.id) ? 'text-red-500 scale-110' : 'text-gray-400 hover:text-red-500'}`}
+                                >
+                                    {isInWishlist(product.id) ? <FaHeart /> : <FiHeart />}
                                 </button>
-                                <button className="p-3 bg-white rounded-full shadow-lg text-gray-400 transition-all">
+                                <button 
+                                    onClick={handleShare}
+                                    className="p-3 bg-white rounded-full shadow-lg text-gray-400 hover:text-blue-600 transition-all"
+                                >
                                     <FiShare2 />
                                 </button>
                             </div>
@@ -132,10 +171,6 @@ export default function ProductDetail() {
                     <div className="space-y-4">
                         <div className="flex items-center gap-4">
                             <span className="bg-blue-600 text-white text-[10px] font-bold px-3 py-1 uppercase tracking-widest">In Stock</span>
-                            <div className="flex items-center gap-1 text-orange-400">
-                                {[...Array(5)].map((_, i) => <FiStar key={i} fill={i < Math.floor(product.rating) ? 'currentColor' : 'none'} size={14} />)}
-                                <span className="text-gray-400 text-sm ml-2 font-medium">({product.reviews} Customer Reviews)</span>
-                            </div>
                         </div>
 
                         <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 leading-tight">
@@ -185,7 +220,7 @@ export default function ProductDetail() {
                         <div className="flex flex-wrap items-center gap-3">
                             <Link
                                 to="/book-technician"
-                                className="flex-grow md:flex-none h-11 bg-[#0F1111] text-white px-8 rounded-full font-bold text-sm transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-gray-200 flex items-center justify-center"
+                                className="flex-grow md:flex-none h-11 bg-[#0F1111] text-white px-8 rounded-full font-bold text-sm transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center"
                             >
                                 Book a Slot
                             </Link>
@@ -198,7 +233,11 @@ export default function ProductDetail() {
                                 Enquiry
                             </Link>
 
-                            <button className="w-11 h-11 flex items-center justify-center border-2 border-gray-100 rounded-full text-gray-600 transition-all">
+                            <button 
+                                onClick={handleAddToCart}
+                                title="Add to Cart"
+                                className="w-11 h-11 flex items-center justify-center border-2 border-gray-100 rounded-full text-gray-600 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all"
+                            >
                                 <FiShoppingBag size={18} />
                             </button>
                         </div>

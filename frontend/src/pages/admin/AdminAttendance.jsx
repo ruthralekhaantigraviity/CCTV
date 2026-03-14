@@ -5,30 +5,64 @@ import {
     FiSearch, FiCalendar, FiDownload, FiUsers, FiUserCheck
 } from 'react-icons/fi';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 export default function AdminAttendance() {
     const [attendance, setAttendance] = useState([]);
     const [employees, setEmployees] = useState([]);
+    const [leaves, setLeaves] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+    const [activeTab, setActiveTab] = useState('Today'); // Today, Monthly, Leave
+
+    const updateLeaveStatus = async (id, status) => {
+        try {
+            const token = localStorage.getItem('token');
+            await axios.patch(`http://localhost:5000/api/leave/${id}`, { status }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            toast.success(`Leave request ${status}`, {
+                style: { borderRadius: '0', background: '#0F172A', color: '#fff', fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px' }
+            });
+            // Refresh leaves
+            const leaveRes = await axios.get('http://localhost:5000/api/leave', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setLeaves(leaveRes.data.data || []);
+        } catch (err) {
+            toast.error('Failed to update leave status');
+        }
+    };
+
+    const handleGenerateReport = () => {
+        toast.success(`Report Generated for ${new Date(selectedDate).toLocaleDateString()}`, {
+            icon: '📊',
+            style: { borderRadius: '0', background: '#0F172A', color: '#fff', fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px' }
+        });
+        console.log(`Report: ${todayRecords.length} Present, ${absentCount} Absent on ${selectedDate}`);
+    };
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const [attRes, empRes] = await Promise.all([
-                    axios.get('/api/attendance', {
+                const [attRes, empRes, leaveRes] = await Promise.all([
+                    axios.get('http://localhost:5000/api/attendance', {
                         headers: { Authorization: `Bearer ${token}` }
                     }),
-                    axios.get('/api/auth/employees', {
+                    axios.get('http://localhost:5000/api/auth/employees', {
+                        headers: { Authorization: `Bearer ${token}` }
+                    }),
+                    axios.get('http://localhost:5000/api/leave', {
                         headers: { Authorization: `Bearer ${token}` }
                     }),
                 ]);
                 setAttendance(attRes.data.data || []);
                 setEmployees(empRes.data.data || []);
+                setLeaves(leaveRes.data.data || []);
             } catch (err) {
-                console.error('Failed to fetch attendance data');
+                console.error('Failed to fetch dashboard data');
             } finally {
                 setLoading(false);
             }
@@ -37,9 +71,15 @@ export default function AdminAttendance() {
     }, []);
 
     const todayRecords = attendance.filter(a => {
-        const aDate = new Date(a.clockIn).toISOString().split('T')[0];
-        return aDate === selectedDate;
+        // Use the 'date' field directly (YYYY-MM-DD) for consistency with backend
+        return a.date === selectedDate;
     });
+
+    const onLeaveCount = leaves.filter(l => {
+        const start = l.startDate.split('T')[0];
+        const end = l.endDate.split('T')[0];
+        return l.status === 'approved' && selectedDate >= start && selectedDate <= end;
+    }).length;
 
     const filtered = todayRecords.filter(a =>
         a.employee?.name?.toLowerCase().includes(search.toLowerCase())
@@ -76,8 +116,11 @@ export default function AdminAttendance() {
                     <h1 className="text-3xl font-black text-slate-900 tracking-tighter">Attendance</h1>
                 </div>
                 <div className="flex items-center gap-3">
-                    <button className="flex items-center gap-2 px-5 py-3 bg-white border border-gray-100 text-[10px] font-black uppercase tracking-widest text-slate-600 transition-all">
-                        <FiDownload size={15} /> Export
+                    <button 
+                        onClick={handleGenerateReport}
+                        className="flex items-center gap-2 px-5 py-3 bg-white border border-gray-100 text-[10px] font-black uppercase tracking-widest text-slate-600 transition-all hover:bg-slate-50 active:scale-95"
+                    >
+                        <FiDownload size={15} /> Reports
                     </button>
                     <div className="flex items-center gap-2 bg-white border border-gray-100 px-5 py-3 ">
                         <FiCalendar size={15} className="text-slate-400" />
@@ -91,152 +134,288 @@ export default function AdminAttendance() {
                 </div>
             </div>
 
-            {/* Stats Row */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                {[
-                    { label: 'Total Staff', value: employees.length, icon: FiUsers, color: 'blue' },
-                    { label: 'Present Today', value: todayRecords.length, icon: FiUserCheck, color: 'emerald' },
-                    { label: 'Late Entries', value: lateCount, icon: FiAlertCircle, color: 'amber' },
-                    { label: 'Absent', value: absentCount, icon: FiXCircle, color: 'red' },
-                ].map((s, i) => (
-                    <motion.div
-                        key={s.label}
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.08 }}
-                        className="bg-white p-5 border border-gray-100 flex items-center gap-4"
+            {/* Tabs */}
+            <div className="flex items-center gap-1 bg-gray-50/50 p-1 w-fit rounded-none border border-gray-100">
+                {['Today', 'Monthly', 'Leave'].map(tab => (
+                    <button
+                        key={tab}
+                        onClick={() => setActiveTab(tab)}
+                        className={`px-8 py-2.5 text-[10px] font-black uppercase tracking-widest transition-all ${
+                            activeTab === tab
+                                ? 'bg-[#0a1628] text-white shadow-lg'
+                                : 'text-slate-400 hover:text-slate-600 hover:bg-gray-100'
+                        }`}
                     >
-                        <div className={`w-12 h-12 flex items-center justify-center ${s.color === 'blue' ? 'bg-blue-50 text-blue-600' :
-                            s.color === 'emerald' ? 'bg-emerald-50 text-emerald-600' :
-                                s.color === 'amber' ? 'bg-amber-50 text-amber-500' :
-                                    'bg-red-50 text-red-500'
-                            }`}>
-                            <s.icon size={22} />
-                        </div>
-                        <div>
-                            <p className="text-2xl font-black text-slate-800">{s.value}</p>
-                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{s.label}</p>
-                        </div>
-                    </motion.div>
+                        {tab}
+                    </button>
                 ))}
             </div>
 
-            {/* Search */}
-            <div className="relative">
-                <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
-                <input
-                    type="text"
-                    placeholder="Search staff member..."
-                    value={search}
-                    onChange={e => setSearch(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-white border border-gray-100 text-sm text-slate-700 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-100 "
-                />
-            </div>
+            {activeTab === 'Today' && (
+                <div className="space-y-8">
+                    {/* Stats Row */}
+                    <div className="flex flex-wrap gap-4">
+                        {[
+                            { label: 'Total Staff', value: employees.length, icon: FiUsers, color: 'blue' },
+                            { label: 'Present Today', value: todayRecords.length, icon: FiUserCheck, color: 'emerald' },
+                            { label: 'Late Entries', value: lateCount, icon: FiAlertCircle, color: 'amber' },
+                            { label: 'Absent', value: absentCount, icon: FiXCircle, color: 'red' },
+                            { label: 'On Leave', value: onLeaveCount, icon: FiCalendar, color: 'purple' },
+                        ].map((s, i) => (
+                            <motion.div
+                                key={s.label}
+                                initial={{ opacity: 0, y: 8 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: i * 0.08 }}
+                                className="bg-white p-5 border border-gray-100 flex items-center gap-4 min-w-[200px] flex-1"
+                            >
+                                <div className={`w-12 h-12 flex items-center justify-center ${s.color === 'blue' ? 'bg-blue-50 text-blue-600' :
+                                    s.color === 'emerald' ? 'bg-emerald-50 text-emerald-600' :
+                                        s.color === 'amber' ? 'bg-amber-50 text-amber-500' :
+                                            s.color === 'purple' ? 'bg-purple-50 text-purple-600' :
+                                                'bg-red-50 text-red-500'
+                                    }`}>
+                                    <s.icon size={22} />
+                                </div>
+                                <div>
+                                    <p className="text-2xl font-black text-slate-800">{s.value}</p>
+                                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{s.label}</p>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
 
-            {/* Attendance Table */}
-            <div className="bg-white border border-gray-100 overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left">
-                        <thead>
-                            <tr className="border-b border-gray-100 bg-gray-50/60">
-                                {['Staff Member', 'Clock-In', 'Clock-Out', 'Duration', 'Status'].map(col => (
-                                    <th key={col} className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-slate-400">
-                                        {col}
-                                    </th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-50">
-                            {filtered.length === 0 ? (
-                                <tr>
-                                    <td colSpan="5" className="py-20 text-center">
-                                        <FiClock className="mx-auto text-slate-200 mb-3" size={40} />
-                                        <p className="text-xs font-black text-slate-300 uppercase tracking-widest">
-                                            No attendance records for this date
-                                        </p>
-                                    </td>
-                                </tr>
-                            ) : filtered.map((record, idx) => {
-                                const clockedOut = !!record.clockOut;
-                                const hour = new Date(record.clockIn).getHours();
-                                const isLate = hour >= 10;
+                    {/* Search */}
+                    <div className="relative">
+                        <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
+                        <input
+                            type="text"
+                            placeholder="Search staff member..."
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                            className="w-full pl-10 pr-4 py-3 bg-white border border-gray-100 text-sm text-slate-700 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-100 "
+                        />
+                    </div>
 
-                                return (
-                                    <motion.tr
-                                        key={record._id}
-                                        initial={{ opacity: 0, x: -8 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: idx * 0.04 }}
-                                        className=" transition-colors"
-                                    >
-                                        {/* Employee */}
-                                        <td className="px-6 py-5">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-slate-900 flex items-center justify-center text-white font-black text-sm ">
-                                                    {record.employee?.name?.charAt(0).toUpperCase() || '?'}
-                                                </div>
-                                                <div>
-                                                    <p className="font-black text-slate-800 text-sm leading-none">
-                                                        {record.employee?.name || 'Unknown'}
-                                                    </p>
-                                                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">
-                                                        Technician
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </td>
+                    {/* Attendance Table Header */}
+                    <div className="flex items-center justify-between">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            Attendance Report: <span className="text-blue-600">{new Date(selectedDate).toLocaleDateString('en-GB')}</span>
+                        </p>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            Staff Present: <span className="text-emerald-600">{todayRecords.length} Member(s)</span>
+                        </p>
+                    </div>
 
-                                        {/* Clock In */}
-                                        <td className="px-6 py-5">
-                                            <span className="text-sm font-bold text-slate-700">
-                                                {formatTime(record.clockIn)}
-                                            </span>
-                                            {isLate && (
-                                                <p className="text-[9px] font-black text-amber-500 uppercase tracking-wide mt-0.5">
-                                                    Late
+                    {/* Attendance Table */}
+                    <div className="bg-white border border-gray-100 overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left">
+                                <thead>
+                                    <tr className="border-b border-gray-100 bg-gray-50/60">
+                                        {['Staff Member', 'Clock-In', 'Clock-Out', 'Duration', 'Status'].map(col => (
+                                            <th key={col} className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-slate-400">
+                                                {col}
+                                            </th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-50">
+                                    {filtered.length === 0 ? (
+                                        <tr>
+                                            <td colSpan="5" className="py-20 text-center">
+                                                <FiClock className="mx-auto text-slate-200 mb-3" size={40} />
+                                                <p className="text-xs font-black text-slate-300 uppercase tracking-widest">
+                                                    No attendance records for this date
                                                 </p>
-                                            )}
-                                        </td>
+                                            </td>
+                                        </tr>
+                                    ) : filtered.map((record, idx) => {
+                                        const clockedOut = !!record.clockOut;
+                                        const hour = new Date(record.clockIn).getHours();
+                                        const isLate = hour >= 10;
 
-                                        {/* Clock Out */}
-                                        <td className="px-6 py-5">
-                                            <span className="text-sm font-bold text-slate-700">
-                                                {formatTime(record.clockOut)}
-                                            </span>
-                                        </td>
+                                        return (
+                                            <motion.tr
+                                                key={record._id}
+                                                initial={{ opacity: 0, x: -8 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                transition={{ delay: idx * 0.04 }}
+                                                className=" transition-colors"
+                                            >
+                                                {/* Employee */}
+                                                <td className="px-6 py-5">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-10 h-10 bg-slate-900 flex items-center justify-center text-white font-black text-sm ">
+                                                            {record.employee?.name?.charAt(0).toUpperCase() || '?'}
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-black text-slate-800 text-sm leading-none">
+                                                                {record.employee?.name || 'Unknown'}
+                                                            </p>
+                                                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+                                                                Technician
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </td>
 
-                                        {/* Duration */}
-                                        <td className="px-6 py-5">
-                                            <span className="text-sm font-black text-blue-600">
-                                                {getDuration(record.clockIn, record.clockOut)}
-                                            </span>
-                                        </td>
-
-                                        {/* Status */}
-                                        <td className="px-6 py-5">
-                                            {clockedOut ? (
-                                                <div className="flex items-center gap-2">
-                                                    <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                                                    <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">
-                                                        Completed
+                                                {/* Clock In */}
+                                                <td className="px-6 py-5">
+                                                    <span className="text-sm font-bold text-slate-700">
+                                                        {formatTime(record.clockIn)}
                                                     </span>
-                                                </div>
-                                            ) : (
-                                                <div className="flex items-center gap-2">
-                                                    <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-                                                    <span className="text-[9px] font-black text-blue-600 uppercase tracking-widest">
-                                                        On Duty
+                                                    {isLate && (
+                                                        <p className="text-[9px] font-black text-amber-500 uppercase tracking-wide mt-0.5">
+                                                            Late
+                                                        </p>
+                                                    )}
+                                                </td>
+
+                                                {/* Clock Out */}
+                                                <td className="px-6 py-5">
+                                                    <span className="text-sm font-bold text-slate-700">
+                                                        {formatTime(record.clockOut)}
                                                     </span>
-                                                </div>
-                                            )}
-                                        </td>
-                                    </motion.tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
+                                                </td>
+
+                                                {/* Duration */}
+                                                <td className="px-6 py-5">
+                                                    <span className="text-sm font-black text-blue-600">
+                                                        {getDuration(record.clockIn, record.clockOut)}
+                                                    </span>
+                                                </td>
+
+                                                {/* Status */}
+                                                <td className="px-6 py-5">
+                                                    {clockedOut ? (
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                                                            <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">
+                                                                Completed
+                                                            </span>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                                                            <span className="text-[9px] font-black text-blue-600 uppercase tracking-widest">
+                                                                On Duty
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                </td>
+                                            </motion.tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            )}
+
+            {activeTab === 'Leave' && (
+                <div className="space-y-8">
+                    {/* Search */}
+                    <div className="relative">
+                        <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
+                        <input
+                            type="text"
+                            placeholder="Search by employee name..."
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                            className="w-full pl-10 pr-4 py-3 bg-white border border-gray-100 text-sm text-slate-700 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-100 "
+                        />
+                    </div>
+
+                    {/* Leave Table */}
+                    <div className="bg-white border border-gray-100 overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left">
+                                <thead>
+                                    <tr className="border-b border-gray-100 bg-gray-50/60">
+                                        {['Employee Name', 'Type', 'Duration', 'Reason', 'Applied', 'Status', 'Actions'].map(col => (
+                                            <th key={col} className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-slate-400">
+                                                {col}
+                                            </th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-50">
+                                    {leaves.filter(l => l.employee?.name?.toLowerCase().includes(search.toLowerCase())).length === 0 ? (
+                                        <tr>
+                                            <td colSpan="7" className="py-20 text-center">
+                                                <p className="text-xs font-black text-slate-300 uppercase tracking-widest">
+                                                    No pending leave requests
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    ) : leaves.filter(l => l.employee?.name?.toLowerCase().includes(search.toLowerCase())).map((leave, idx) => (
+                                        <motion.tr
+                                            key={leave._id}
+                                            initial={{ opacity: 0, x: -8 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: idx * 0.04 }}
+                                            className="transition-colors hover:bg-gray-50/30"
+                                        >
+                                            <td className="px-6 py-5 font-black text-slate-800 text-sm">
+                                                {leave.employee?.name || 'Unknown'}
+                                            </td>
+                                            <td className="px-6 py-5 text-sm text-slate-600 font-bold">
+                                                {leave.leaveType}
+                                            </td>
+                                            <td className="px-6 py-5 text-sm text-slate-600 font-bold">
+                                                {new Date(leave.startDate).toLocaleDateString()} - {new Date(leave.endDate).toLocaleDateString()}
+                                            </td>
+                                            <td className="px-6 py-5 text-sm text-slate-600 max-w-xs truncate font-bold">
+                                                {leave.reason}
+                                            </td>
+                                            <td className="px-6 py-5 text-sm text-slate-400 font-bold">
+                                                {new Date(leave.createdAt).toLocaleDateString()}
+                                            </td>
+                                            <td className="px-6 py-5">
+                                                <span className={`px-3 py-1 text-[8px] font-black uppercase tracking-widest ${
+                                                    leave.status === 'approved' ? 'bg-emerald-50 text-emerald-600' :
+                                                    leave.status === 'rejected' ? 'bg-red-50 text-red-600' :
+                                                    'bg-amber-50 text-amber-600'
+                                                }`}>
+                                                    {leave.status}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-5">
+                                                {leave.status === 'pending' && (
+                                                    <div className="flex gap-2">
+                                                        <button 
+                                                            onClick={() => updateLeaveStatus(leave._id, 'approved')}
+                                                            className="p-2 bg-emerald-500 text-white"
+                                                            title="Approve"
+                                                        >
+                                                            <FiCheckCircle size={14} />
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => updateLeaveStatus(leave._id, 'rejected')}
+                                                            className="p-2 bg-red-500 text-white"
+                                                            title="Reject"
+                                                        >
+                                                            <FiXCircle size={14} />
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </td>
+                                        </motion.tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {activeTab === 'Monthly' && (
+                <div className="py-20 text-center bg-white border border-gray-100">
+                    <p className="text-sm font-black text-slate-300 uppercase tracking-widest">Monthly view coming soon</p>
+                </div>
+            )}
         </div>
     );
 }

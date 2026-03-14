@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     FiClipboard, FiMapPin, FiPhone, FiClock, FiCheckCircle,
-    FiCamera, FiNavigation, FiInfo, FiChevronRight, FiX, FiCheck
+    FiCamera, FiNavigation, FiInfo, FiChevronRight, FiX, FiCheck, FiTarget
 } from 'react-icons/fi';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 export default function MyMissions() {
     const [jobs, setJobs] = useState([]);
@@ -41,7 +42,9 @@ export default function MyMissions() {
                 if (newStatus === 'completed') setShowProofUpload(false);
             }
         } catch (err) {
-            alert('Status update failed');
+            toast.error('Status update failed', {
+                style: { borderRadius: '0px', background: '#333', color: '#fff' }
+            });
         }
     };
 
@@ -55,7 +58,12 @@ export default function MyMissions() {
     };
 
     const submitCompletion = async () => {
-        if (!proofImage) return alert('Photo evidence required for mission completion.');
+        if (!proofImage) {
+            toast.error('Photo evidence required!', {
+                style: { borderRadius: '0px', background: '#333', color: '#fff' }
+            });
+            return;
+        }
         setLoading(true);
         try {
             const res = await axios.patch(`/api/jobs/${selectedJob._id}/status`, {
@@ -66,9 +74,14 @@ export default function MyMissions() {
                 setShowProofUpload(false);
                 setSelectedJob(null);
                 fetchMyJobs();
+                toast.success('Mission Accomplished!', {
+                    style: { borderRadius: '0px', background: '#0f172a', color: '#fff' }
+                });
             }
         } catch (err) {
-            alert('Upload failed');
+            toast.error('Upload failed', {
+                style: { borderRadius: '0px', background: '#333', color: '#fff' }
+            });
         } finally {
             setLoading(false);
         }

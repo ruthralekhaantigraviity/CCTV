@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
+import { useWishlist } from '../context/WishlistContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     FiUser, FiShoppingBag, FiHeart, FiMapPin, FiEdit3, FiSettings, FiBell,
@@ -9,13 +10,10 @@ import {
 
 export default function Dashboard() {
     const { user, logout, loading } = useAuth();
+    const { wishlist, toggleWishlist } = useWishlist();
     const [activeTab, setActiveTab] = useState('profile');
-    const [wishlistItems, setWishlistItems] = useState([
-        { id: 1, name: 'Outdoor Vision 360', category: 'PTZ Camera', price: '₹12,499', img: 'https://images.unsplash.com/photo-1557862921-37829c790f19?w=300' },
-        { id: 2, name: 'NightSentry Pro', category: 'Infrared Bullet', price: '₹9,999', img: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=300' },
-        { id: 3, name: 'UltraHD Dome X1', category: 'Indoor Dome', price: '₹6,499', img: 'https://images.unsplash.com/photo-1524143878510-e3b8d6312402?w=300' },
-        { id: 4, name: 'Dual-Lens Guardian', category: 'AI Tracking', price: '₹15,999', img: 'https://images.unsplash.com/photo-1621524624211-7912187c34f1?w=300' }
-    ]);
+
+    const wishlistItems = wishlist;
 
     const [addresses, setAddresses] = useState([
         { id: 1, type: 'Home', address: user?.phone + ', Anna Salai, Chennai, TN - 600002', primary: true },
@@ -23,7 +21,8 @@ export default function Dashboard() {
     ]);
 
     const removeFromWishlist = (id) => {
-        setWishlistItems(prev => prev.filter(item => item.id !== id));
+        const product = wishlist.find(i => i.id === id);
+        if (product) toggleWishlist(product);
     };
 
     const deleteAddress = (id) => {
@@ -96,7 +95,7 @@ export default function Dashboard() {
                                 </div>
                             </div>
 
-                            <button className="mt-10 px-10 py-4 bg-blue-600 text-white font-black uppercase text-xs tracking-widest transition-all rounded-lg no-hover-bg">
+                            <button className="mt-10 px-10 py-4 bg-blue-600 text-white font-black uppercase text-xs tracking-widest rounded-lg active:scale-[0.98]">
                                 Edit Details
                             </button>
                         </div>
@@ -177,7 +176,7 @@ export default function Dashboard() {
                                                 <p className="text-[10px] t-muted font-bold uppercase tracking-widest">{item.category}</p>
                                             </div>
                                             <div className="flex items-center justify-between">
-                                                <p className="font-black text-blue-600 dark:text-blue-400 text-sm">{item.price}</p>
+                                                <p className="font-black text-blue-600 dark:text-blue-400 text-sm">₹{item.price.toLocaleString()}</p>
                                                 <div className="flex gap-3">
                                                     <button
                                                         onClick={() => removeFromWishlist(item.id)}
@@ -186,9 +185,13 @@ export default function Dashboard() {
                                                     >
                                                         <FiTrash2 size={16} />
                                                     </button>
-                                                    <button className="text-blue-600 dark:text-blue-400 transition-colors p-1" title="View Product">
+                                                    <Link 
+                                                        to={`/products/${item.slug}`}
+                                                        className="text-blue-600 dark:text-blue-400 transition-colors p-1" 
+                                                        title="View Product"
+                                                    >
                                                         <FiArrowRight size={16} />
-                                                    </button>
+                                                    </Link>
                                                 </div>
                                             </div>
                                         </div>
@@ -239,7 +242,7 @@ export default function Dashboard() {
                     <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="bg-card p-8 border border-gray-100 shadow-sm rounded-2xl">
                         <div className="flex items-center justify-between mb-8">
                             <h3 className="text-xl font-bold t-primary">Address Book</h3>
-                            <button className="flex items-center gap-2 text-xs font-black text-white bg-sky-500 px-5 py-2.5 rounded-lg transition-all no-hover-bg uppercase tracking-widest shadow-none border-none">
+                            <button className="flex items-center gap-2 text-xs font-black text-white bg-sky-500 px-5 py-2.5 rounded-lg hover:bg-sky-500 uppercase tracking-widest shadow-none border-none active:scale-[0.98]">
                                 <FiPlus /> Add New
                             </button>
                         </div>

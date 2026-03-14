@@ -10,74 +10,86 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
 const products = [
- {
- id: 1,
- name: 'ProVision 4K Dome',
- image: '/prod_dome.png'
- },
- {
- id: 2,
- name: 'NightGuard Bullet',
- image: '/prod_bullet.png'
- },
- {
- id: 3,
- name: 'Titan PTZ 360',
- image: '/prod_ptz.png'
- },
- {
- id: 4,
- name: 'Quantum NVR 32',
- image: '/prod_nvr.png'
- },
- {
- id: 5,
- name: 'Wireless Smart WiFi Cam',
- image: '/prod_wireless.png'
- },
- {
- id: 6,
- name: 'Pro Face-Detect AI Cam',
- image: '/svc2.png'
- },
- {
- id: 7,
- name: 'Vandal-Proof Master Cam',
- image: '/svc3.png'
- },
- {
- id: 8,
- name: 'Ultra-HD Indoor Dome',
- image: '/cam1.png'
- },
- {
- id: 9,
- name: 'Night-Vision Bullet Pro',
- image: '/cam2.png'
- }
+  {
+    id: 1,
+    name: 'ProVision 4K Dome',
+    image: '/prod_dome.png',
+    price: 4999
+  },
+  {
+    id: 2,
+    name: 'NightGuard Bullet',
+    image: '/prod_bullet.png',
+    price: 5499
+  },
+  {
+    id: 3,
+    name: 'Titan PTZ 360',
+    image: '/prod_ptz.png',
+    price: 12999
+  },
+  {
+    id: 4,
+    name: 'Quantum NVR 32',
+    image: '/prod_nvr.png',
+    price: 24999
+  },
+  {
+    id: 5,
+    name: 'Wireless Smart WiFi Cam',
+    image: '/prod_wireless.png',
+    price: 3199
+  },
+  {
+    id: 6,
+    name: 'Pro Face-Detect AI Cam',
+    image: '/svc2.png',
+    price: 8499
+  },
+  {
+    id: 7,
+    name: 'Vandal-Proof Master Cam',
+    image: '/svc3.png',
+    price: 6799
+  },
+  {
+    id: 8,
+    name: 'Ultra-HD Indoor Dome',
+    image: '/cam1.png',
+    price: 3899
+  },
+  {
+    id: 9,
+    name: 'Night-Vision Bullet Pro',
+    image: '/cam2.png',
+    price: 4599
+  }
 ];
 
 function ProductCard({ product }) {
- return (
- <Link to={`/products`} className="group block w-full">
- <div className="relative aspect-square flex items-center justify-center mb-6 transition-transform duration-500 group-">
- {/* Minimalist Image - No Box */}
- <img
- src={product.image}
- alt={product.name}
- className="w-4/5 h-auto object-contain drop-shadow-2xl"
- onError={(e) => {
- e.target.src = "https://images.unsplash.com/photo-1557862921-37829c790f19?w=400";
- }}
- />
- </div>
- <div className="text-center">
- <h3 className="text-lg font-bold t-primary group- transition-colors uppercase tracking-tight">
- {product.name}
- </h3>
- </div>
- </Link>
- );
+  return (
+    <Link to={`/products`} className="group block w-full">
+      <div className="relative aspect-square flex items-center justify-center mb-6 transition-transform duration-500 group-">
+        {/* Minimalist Image - No Box */}
+        <img
+          src={product.image}
+          alt={product.name}
+          className="w-4/5 h-auto object-contain drop-shadow-2xl"
+          onError={(e) => {
+            e.target.src = "https://images.unsplash.com/photo-1557862921-37829c790f19?w=400";
+          }}
+        />
+      </div>
+      <div className="text-center">
+        <h3 className="text-lg font-bold t-primary group- transition-colors uppercase tracking-tight mb-2">
+          {product.name}
+        </h3>
+        <p className="text-xl font-extrabold text-[#d32f2f]">
+          ₹{product.price.toLocaleString()}
+        </p>
+      </div>
+    </Link>
+  );
 }
 
 export default function ProductShowcase() {

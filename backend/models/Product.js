@@ -18,7 +18,7 @@ const productSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // Middleware to update status based on stockQuantity
-productSchema.pre('save', function (next) {
+productSchema.pre('save', function () {
     if (this.stockQuantity <= 0) {
         this.status = 'Out of Stock';
     } else if (this.stockQuantity <= this.reorderLevel) {
@@ -26,7 +26,6 @@ productSchema.pre('save', function (next) {
     } else {
         this.status = 'In Stock';
     }
-    next();
 });
 
 module.exports = mongoose.model('Product', productSchema);

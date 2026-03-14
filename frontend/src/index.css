@@ -134,10 +134,6 @@
   .bg-page {
     background: var(--bg-primary);
   }
-
-  .no-hover-bg:hover {
-    background-color: #ffffff !important;
-  }
 }
 
 /* ─── Global Dark Mode Overrides ─────────────────────────────── */

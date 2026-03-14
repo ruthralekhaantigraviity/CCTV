@@ -25,8 +25,8 @@ export default function AdminBooking() {
             try {
                 const token = localStorage.getItem('token');
                 const [jobsRes, empsRes] = await Promise.all([
-                    axios.get('/api/jobs', { headers: { Authorization: `Bearer ${token}` } }),
-                    axios.get('/api/auth/employees', { headers: { Authorization: `Bearer ${token}` } })
+                    axios.get('http://localhost:5000/api/jobs', { headers: { Authorization: `Bearer ${token}` } }),
+                    axios.get('http://localhost:5000/api/auth/employees', { headers: { Authorization: `Bearer ${token}` } })
                 ]);
                 setJobs(jobsRes.data.data || []);
                 setEmployees(empsRes.data.data || []);
@@ -47,11 +47,11 @@ export default function AdminBooking() {
         setAssigning(jobId);
         try {
             const token = localStorage.getItem('token');
-            await axios.patch(`/api/jobs/${jobId}/assign`,
+            await axios.patch(`http://localhost:5000/api/jobs/${jobId}/assign`,
                 { employeeId: empId },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            const jobsRes = await axios.get('/api/jobs', { headers: { Authorization: `Bearer ${token}` } });
+            const jobsRes = await axios.get('http://localhost:5000/api/jobs', { headers: { Authorization: `Bearer ${token}` } });
             setJobs(jobsRes.data.data);
             setSelectedEmployees(prev => {
                 const next = { ...prev };

@@ -105,11 +105,9 @@ export default function ServicesGrid() {
  }}
  onMouseEnter={(e) => {
  e.currentTarget.style.border = `1px solid ${svc.color}60`;
- e.currentTarget.style.boxShadow = `0 20px 60px ${svc.color}20`;
  }}
  onMouseLeave={(e) => {
- e.currentTarget.style.border = '1px solid rgba(59,130,246,0.15)';
- e.currentTarget.style.boxShadow = 'none';
+ e.currentTarget.style.border = '1px solid var(--border-soft)';
  }}
  >
  {/* Image thumbnail */}

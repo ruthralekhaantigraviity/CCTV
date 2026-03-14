@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -17,9 +18,13 @@ import ProductDetail from './pages/ProductDetail';
 import BookTechnician from './pages/BookTechnician';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+import VerifyEmail from './pages/VerifyEmail';
 import FloatingWidgets from './components/FloatingWidgets';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { WishlistProvider } from './context/WishlistContext';
 import CartDrawer from './components/CartDrawer';
 import Dashboard from './pages/Dashboard';
 import AdminLogin from './pages/AdminLogin';
@@ -29,19 +34,22 @@ import EmployeeDashboard from './pages/EmployeeDashboard';
 import EmployeeLogin from './pages/EmployeeLogin';
 
 // Configure global axios base URL
-axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'https://cctv-kgck.onrender.com';
+axios.defaults.baseURL = ''; // Use relative path to leverage Vite proxy
 axios.defaults.withCredentials = true;
 
 function App() {
   return (
     <AuthProvider>
       <CartProvider>
-        <ThemeProvider>
-          <Router>
-            <AppContent />
-            <CartDrawer />
-          </Router>
-        </ThemeProvider>
+        <WishlistProvider>
+          <ThemeProvider>
+            <Router>
+              <AppContent />
+              <CartDrawer />
+              <Toaster position="top-right" reverseOrder={false} />
+            </Router>
+          </ThemeProvider>
+        </WishlistProvider>
       </CartProvider>
     </AuthProvider>
   );
@@ -72,6 +80,9 @@ function AppContent() {
           <Route path="/book-technician" element={<BookTechnician />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/verify-email/:token" element={<VerifyEmail />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/admin/signup" element={<AdminSignup />} />
           <Route path="/admin/login" element={<AdminLogin />} />

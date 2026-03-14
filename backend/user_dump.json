@@ -34,5 +34,47 @@
     "name": "R",
     "email": "r@gmail.com",
     "role": "user"
+  },
+  {
+    "_id": "69b28a56ff5fa60a6ce6ac01",
+    "name": "Technician 01",
+    "email": "technician01@securevision.com",
+    "role": "employee"
+  },
+  {
+    "_id": "69b28cd921d414ef7147c88b",
+    "name": "Ruthralekha",
+    "email": "ruthralekha1212@gmail.com",
+    "role": "user"
+  },
+  {
+    "_id": "69b3bf883da0d9bb5e5ff320",
+    "name": "Verification Tester",
+    "email": "verify@sv.com",
+    "role": "employee"
+  },
+  {
+    "_id": "69b3cd39fc8468af4ca6a953",
+    "name": "Nick",
+    "email": "n@gmail.com",
+    "role": "employee"
+  },
+  {
+    "_id": "69b3d304a59a59ed00c68009",
+    "name": "Test Employee",
+    "email": "test_emp_new@gmail.com",
+    "role": "employee"
+  },
+  {
+    "_id": "69b3e7e68795ca4eb0366296",
+    "name": "R",
+    "email": "ru@gmail.com",
+    "role": "employee"
+  },
+  {
+    "_id": "69b3f9798795ca4eb0366522",
+    "name": "Ruth",
+    "email": "ruth@gmail.com",
+    "role": "user"
   }
 ]
